@@ -54,11 +54,11 @@ Trabalharemos com acesso direto para todos como colaboradores no repositório.
 ---
 
 ## 📁 Organização de Pastas
-
+```
 flappy-pantaneiro/
 │
 ├── assets/                     # Recursos visuais, sons, fontes etc.
-│   ├── images/
+│   ├── images/                                                      
 │   │   ├── sky/                # Imagens para cenário Céu
 │   │   ├── earth/              # Imagens para cenário Terra
 │   │   └── water/              # Imagens para cenário Água
@@ -88,7 +88,7 @@ flappy-pantaneiro/
 ├── main.py                    # Arquivo principal para iniciar o jogo
 ├── requirements.txt           # Dependências do projeto (ex: pygame)
 └── README.md                  # Documentação do projeto
-
+```
 ---
 
 ## 👥 Times
