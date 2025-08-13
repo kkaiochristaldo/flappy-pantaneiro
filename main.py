@@ -1,7 +1,7 @@
 import pygame as pg
 
 # Importar configurações
-from config import FPS, SCREEN_WIDTH, SCREEN_HEIGHT
+from config import FPS, SCREEN_WIDTH, SCREEN_HEIGHT # Será alterado
 from core import GameState
 
 
