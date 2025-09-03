@@ -1,0 +1,13 @@
+{
+    "target_size": [24, 10],
+    "animations": [
+      {
+        "name": "bullet",
+        "loop": false,
+        "speed": 1,
+        "frames_rect": [
+          [0, 0, 12, 5]
+        ]
+      }
+    ]
+}

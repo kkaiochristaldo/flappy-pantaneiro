@@ -1,0 +1,15 @@
+{
+  "target_size": [68, 48],
+  "animations": [
+    {
+      "name": "fly",
+      "loop": true,
+      "speed": 0.1,
+      "frames_rect": [
+        [0, 0, 34, 24],
+        [34, 0, 34, 24],
+        [68, 0, 34, 24]
+      ]
+    }
+  ]
+}

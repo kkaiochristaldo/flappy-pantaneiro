@@ -78,9 +78,9 @@ class GameState:
         # elif scene_key == "forest":
         #     from forest_scene import ForestScene
         #     return ForestScene(self)
-        # elif scene_key == "sky":
-        #     from sky_scene import SkyScene
-        #     return SkyScene(self)
+        elif scene_key == "sky":
+            from scenes.sky.scene import SkyScene
+            return SkyScene(self)
         # elif scene_key == "water":
         #     from scenes.water import WaterScene
 

@@ -1,0 +1,32 @@
+{
+  "target_size": [64, 64],
+  "animations": [
+    {
+      "name": "straight_fly",
+      "loop": true,
+      "speed": 0.1,
+      "frames_rect": [
+        [0, 0, 32, 32],
+        [32, 0, 32, 32]
+      ]
+    },
+    {
+      "name": "homing_fly",
+      "loop": true,
+      "speed": 0.08,
+      "frames_rect": [
+        [0, 32, 32, 32],
+        [32, 32, 32, 32]
+      ]
+    },
+    {
+      "name": "shooter_fly",
+      "loop": true,
+      "speed": 0.15,
+      "frames_rect": [
+        [0, 64, 32, 32],
+        [32, 64, 32, 32]
+      ]
+    }
+  ]
+}

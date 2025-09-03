@@ -1,0 +1,13 @@
+{
+  "target_size": [104, 640],
+  "animations": [
+    {
+      "name": "idle",
+      "loop": false,
+      "speed": 1.0,
+      "frames_rect": [
+        [0, 0, 52, 320]
+      ]
+    }
+  ]
+}

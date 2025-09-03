@@ -1,0 +1,41 @@
+{
+  "scene_name": "sky",
+  "scroller_cfg": {
+    "initial_speed": 180.0,
+    "max_difficulty_multiplier": 3.0,
+    "difficulty_increase_rate": 0.02
+  },
+  "player_cfg": {
+    "spritesheet": {
+      "image": "assets/images/sky/player_sheet.png",
+      "data": "assets/images/sky/player.json"
+    },
+    "physics": {
+      "thrust_acceleration": 1500,
+      "gravity_acceleration": 900,
+      "max_fall_speed": 600,
+      "max_rise_speed": -600
+    }
+  },
+  "obstacles_cfg": {
+    "spritesheet": {
+      "image": "assets/images/sky/obstacles_sheet.png",
+      "data": "assets/images/sky/obstacles.json"
+    },
+    "spawn_frequency_seconds": 3.5,
+    "center_variance_pixels": 200
+  },
+  "enemies_cfg": {
+    "spritesheet": {
+      "image": "assets/images/sky/enemies_sheet.png",
+      "data": "assets/images/sky/enemies.json"
+    },
+    "spawn_frequency_seconds": 2.0
+  },
+  "effects_cfg": {
+    "spritesheet": {
+        "image": "assets/images/sky/effects_sheet.png",
+        "data": "assets/images/sky/effects.json"
+    }
+  }
+}

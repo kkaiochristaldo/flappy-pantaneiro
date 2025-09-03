@@ -1,0 +1,14 @@
+{
+  "target_size": [48, 48],
+  "animations": [
+    {
+      "name": "shield",
+      "loop": true,
+      "speed": 0.2,
+      "frames_rect": [
+        [0, 0, 24, 24],
+        [24, 0, 24, 24]
+      ]
+    }
+  ]
+}
