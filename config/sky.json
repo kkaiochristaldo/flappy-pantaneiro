@@ -1,5 +1,5 @@
 {
-  "scene_name": "Demo",
+  "scene_name": "sky",
   "background_cfg": {
     "spritesheet": {
       "image": "assets/images/sky/background/layers_sheet.png",
