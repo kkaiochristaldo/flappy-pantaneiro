@@ -1,53 +1,56 @@
 {
-  "scene_name": "sky",
+  "scene_name": "Demo",
+  "background_cfg": {
+    "spritesheet": {
+      "image": "assets/images/sky/background/layers_sheet.png",
+      "data": "assets/images/sky/background/layers.json"
+    },
+    "fallback_color": [34, 139, 34]
+  },
   "scroller_cfg": {
-    "initial_speed": 180.0,
-    "max_difficulty_multiplier": 3.0,
+    "initial_speed": 80.0,
+    "max_difficulty_multiplier": 8.0,
     "difficulty_increase_rate": 0.02
   },
   "player_cfg": {
     "spritesheet": {
-      "image": "assets/images/sky/player_sheet.png",
-      "data": "assets/images/sky/player.json"
+      "image": "assets/images/sky/player/player_sheet.png",
+      "data": "assets/images/sky/player/player.json"
     },
-    "physics": {
-      "thrust_acceleration": 1500,
-      "gravity_acceleration": 900,
-      "max_fall_speed": 600,
-      "max_rise_speed": -600
-    }
+    "fallback_size": [50, 50],
+    "fallback_color": [255, 0, 0]
   },
   "obstacles_cfg": {
-    "spritesheet": {
-      "image": "assets/images/sky/obstacles_sheet.png",
-      "data": "assets/images/sky/obstacles.json"
+    "falling_rock_cfg": {
+      "spritesheet": {
+        "image": "assets/images/sky/obstacles/falling_rock_sheet.png",
+        "data": "assets/images/sky/obstacles/falling_rock.json"
+      },
+      "fallback_size": [60, 60],
+      "fallback_color": [0, 128, 0]
     },
-    "spawn_frequency_seconds": 3.5,
-    "center_variance_pixels": 200
+    "zigzag_bee_cfg": {
+      "spritesheet": {
+        "image": "assets/images/sky/obstacles/zigzag_bee_sheet.png",
+        "data": "assets/images/sky/obstacles/zigzag_bee.json"
+      },
+      "fallback_size": [60, 60],
+      "fallback_color": [0, 128, 0]
+    }
   },
   "enemies_cfg": {
-    "spritesheet": {
-      "image": "assets/images/sky/enemies_sheet.png",
-      "data": "assets/images/sky/enemies.json"
+    "chaser_drone_cfg": {
+      "spritesheet": {
+        "image": "assets/images/sky/enemies/chaser_drone_sheet.png",
+        "data": "assets/images/sky/enemies/chaser_drone.json"
+      },
+      "fallback_size": [60, 60],
+      "fallback_color": [255, 0, 0]
     },
-    "spawn_frequency_seconds": 2.0
-  },
-  "projectiles_cfg": {
-    "spritesheet": {
-        "image": "assets/images/sky/projectiles_sheet.png",
-        "data": "assets/images/sky/projectiles.json"
-    }
-  },
-  "jacare_cfg": {
-    "spritesheet": {
-        "image": "assets/images/sky/jacare_sheet.png",
-        "data": "assets/images/sky/jacare.json"
-    }
-  },
-  "effects_cfg": {
-    "spritesheet": {
-        "image": "assets/images/sky/effects_sheet.png",
-        "data": "assets/images/sky/effects.json"
+    "homing_missile_cfg": {
+      "spritesheet": {},
+      "fallback_size": [60, 60],
+      "fallback_color": [255, 0, 0]
     }
   }
 }
