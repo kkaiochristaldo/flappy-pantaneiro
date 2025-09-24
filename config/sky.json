@@ -32,6 +32,18 @@
     },
     "spawn_frequency_seconds": 2.0
   },
+  "projectiles_cfg": {
+    "spritesheet": {
+        "image": "assets/images/sky/projectiles_sheet.png",
+        "data": "assets/images/sky/projectiles.json"
+    }
+  },
+  "jacare_cfg": {
+    "spritesheet": {
+        "image": "assets/images/sky/jacare_sheet.png",
+        "data": "assets/images/sky/jacare.json"
+    }
+  },
   "effects_cfg": {
     "spritesheet": {
         "image": "assets/images/sky/effects_sheet.png",

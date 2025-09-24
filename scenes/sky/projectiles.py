@@ -1,4 +1,3 @@
-# scenes/sky/projectiles.py
 from core import Entity
 from config import SCREEN_WIDTH
 
@@ -9,7 +8,6 @@ class Projectile(Entity):
         self.speed = speed
 
     def update(self, delta_time: float):
-        super().update(delta_time)
         self.rect.x += self.speed * delta_time
         if self.rect.left > SCREEN_WIDTH or self.rect.right < 0:
             self.kill()

@@ -1,35 +1,35 @@
 {
-    "target_size": [ 1080, 720 ],
-    "layers": [
-        {
-            "name": "ceu",
-            "frame_rect": [ 0, 0, 272, 160 ],
-            "parallax_scale": 0.0
-        },
-        {
-            "name": "nuvens",
-            "frame_rect": [ 272, 0, 272, 160 ],
-            "parallax_scale": 0.2
-        },
-        {
-            "name": "montanha_cinza",
-            "frame_rect": [ 544, 0, 272, 160 ],
-            "parallax_scale": 0.4
-        },
-        {
-            "name": "montanha_verde",
-            "frame_rect": [ 816, 0, 272, 160 ],
-            "parallax_scale": 0.6
-        },
-        {
-            "name": "grama_clara",
-            "frame_rect": [ 1088, 0, 272, 160 ],
-            "parallax_scale": 0.8
-        },
-        {
-            "name": "grama_escura",
-            "frame_rect": [ 1360, 0, 272, 160 ],
-            "parallax_scale": 1.0
-        }
-    ]
+  "target_size": [1080, 720],
+  "layers": [
+    {
+      "name": "ceu/nuvens",
+      "frame_rect": [0, 0, 1280, 720],
+      "parallax_scale": 0.0
+    },
+    {
+      "name": "ArvoreFundo",
+      "frame_rect": [1280, 0, 1280, 720],
+      "parallax_scale": 0.2
+    },
+    {
+      "name": "ArvoreFrente",
+      "frame_rect": [2560, 0, 1280, 720],
+      "parallax_scale": 0.4
+    },
+    {
+      "name": "Agua",
+      "frame_rect": [3840, 0, 1280, 720],
+      "parallax_scale": 0.6
+    },
+    {
+      "name": "ArvorePrincipal",
+      "frame_rect": [5120, 0, 1280, 720],
+      "parallax_scale": 0.8
+    },
+    {
+      "name": "Folhagem",
+      "frame_rect": [6400, 0, 1280, 720],
+      "parallax_scale": 1.0
+    }
+  ]
 }
