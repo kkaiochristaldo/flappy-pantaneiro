@@ -13,7 +13,7 @@ class SkyPlayer(Entity):
         self.__position = pg.math.Vector2(start_x, start_y)
         self.__velocity = pg.math.Vector2(0, 0)
         self.__gravity_acceleration = 980
-        self.__thrust_acceleration = 1300
+        self.__thrust_acceleration = 2000
         self.__dive_acceleration = 1800
         self.__tap_impulse = 120
         self.__max_fall_speed = 600
