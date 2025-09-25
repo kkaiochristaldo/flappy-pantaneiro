@@ -2,15 +2,15 @@ import pygame as pg
 import random
 from core import Entity, EntityFactory
 from config import SCREEN_WIDTH, SCREEN_HEIGHT
-from .demo_player import DemoPlayer
+from .water_player import WaterPlayer
 
 
-class Enemy(Entity):
+class WaterEnemy(Entity):
     """
     Classe base para todos os inimigos que perseguem o jogador.
     """
 
-    def __init__(self, enemy_cfg: dict, x: int, y: int, player_ref: DemoPlayer):
+    def __init__(self, enemy_cfg: dict, x: int, y: int, player_ref: WaterPlayer):
         """
         Inicializa o inimigo. Requer uma referência ao jogador para saber quem seguir.
         """
@@ -41,7 +41,7 @@ class Enemy(Entity):
             self.kill()
 
 
-class ChaserDrone(Enemy):
+class ChaserDrone(WaterEnemy):
     """
     Um drone rápido que prioriza a perseguição horizontal, mas se desvia
     levemente na vertical em direção ao jogador.
@@ -89,7 +89,7 @@ class ChaserDrone(Enemy):
         super().update(delta_time)
 
 
-class HomingMissile(Enemy):
+class HomingMissile(WaterEnemy):
     """
     Um míssil rápido que persegue o jogador em ambos os eixos,
     mas com uma capacidade de virada vertical muito reduzida.
@@ -147,7 +147,7 @@ class HomingMissile(Enemy):
         super().update(delta_time)
 
 
-class DemoEnemySpawner:
+class WaterEnemySpawner:
     """
     Gerencia a criação e o timing de spawn dos inimigos da DemoScene.
     """
@@ -164,7 +164,7 @@ class DemoEnemySpawner:
 
     def update(
         self, delta_time: float, current_speed: float, player_ref
-    ) -> Enemy | None:
+    ) -> WaterEnemy | None:
         """
         Verifica se é hora de gerar um novo inimigo.
         """
