@@ -1,5 +1,5 @@
 {
-    "scene_name": "Water",
+    "scene_name": "water",
     "background_cfg": {
         "spritesheet": {
             "image": "assets/images/water/background/layers_sheet.png",

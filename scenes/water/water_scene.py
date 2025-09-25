@@ -42,30 +42,44 @@ class WaterScene:
         self.enemy_spawner = WaterEnemySpawner(self.config["enemies_cfg"])
 
     def handle_event(self, event: pg.event.Event):
-        """Processa eventos do Pygame.
 
-        Args:
-            event (pg.event.Event): Evento a ser processado
-        """
-        if event.type == pg.KEYDOWN:
-            # Se a SETA PARA CIMA for pressionada
-            if event.key == pg.K_UP:
-                self.player.start_thrust()
+      if event.type == pg.KEYDOWN:
+        # Se a SETA PARA CIMA for pressionada
+        if event.key == pg.K_UP:
+            self.player.start_thrust()
 
-            # Se a SETA PARA BAIXO for pressionada
-            if event.key == pg.K_DOWN:
-                self.player.start_dive()
-            elif event.key == pg.K_ESCAPE:
-                self.game_state.change_state(State.PAUSE)
+        # Se a SETA PARA BAIXO for pressionada
+        elif event.key == pg.K_DOWN:
+            self.player.start_dive()
 
-        if event.type == pg.KEYUP:
-            # Se a SETA PARA CIMA for solta
-            if event.key == pg.K_UP:
-                self.player.stop_thrust()
+        # Se a SETA PARA ESQUERDA for pressionada
+        elif event.key == pg.K_LEFT:
+            self.player.start_move_left()
 
-            # Se a SETA PARA BAIXO for solta
-            if event.key == pg.K_DOWN:
-                self.player.stop_dive()
+        # Se a SETA PARA DIREITA for pressionada
+        elif event.key == pg.K_RIGHT:
+            self.player.start_move_right()
+
+        # Se a tecla ESCAPE for pressionada
+        elif event.key == pg.K_ESCAPE:
+            self.game_state.change_state(State.PAUSE)
+
+      if event.type == pg.KEYUP:
+        # Se a SETA PARA CIMA for solta
+        if event.key == pg.K_UP:
+            self.player.stop_thrust()
+
+        # Se a SETA PARA BAIXO for solta
+        elif event.key == pg.K_DOWN:
+            self.player.stop_dive()
+
+        # Se a SETA PARA ESQUERDA for solta
+        elif event.key == pg.K_LEFT:
+            self.player.stop_move_left()
+
+        # Se a SETA PARA DIREITA for solta
+        elif event.key == pg.K_RIGHT:
+            self.player.stop_move_right()
 
     def update(self, delta_time: float):
         """Atualiza o estado do cenário.
