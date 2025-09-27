@@ -1,5 +1,5 @@
 {
-    "target_size": [ 64, 64 ],
+    "target_size": [ 386, 386 ],
     "animations": [
         {
             "name": "fly",
