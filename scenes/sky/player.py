@@ -27,6 +27,17 @@ class SkyPlayer(Entity):
 
         # Posicionamento do rect
         self.rect.center = (int(self.__position.x), int(self.__position.y))
+        self.__controls_locked = False  
+
+    @property
+    def controls_locked(self):
+        return self.__controls_locked
+
+    def lock_controls(self):
+        """Trava os controles do player (usado pelo jacaré)"""
+        self.__controls_locked = True
+        self.__is_thrusting = False
+        self.__is_diving = False
 
     @property
     def invincible(self):
@@ -59,6 +70,22 @@ class SkyPlayer(Entity):
 
     def __process_physics(self, delta_time: float):
         """Implementa a física de gravidade, propulsão e mergulho."""
+
+        # Se os controles estão travados, apenas aplica gravidade
+        if self.__controls_locked:
+            current_acceleration = self.__gravity_acceleration
+            self.__velocity.y += current_acceleration * delta_time
+            self.__velocity.y = min(self.__velocity.y, self.__max_fall_speed)
+            self.__position.y += self.__velocity.y * delta_time
+            
+            # Não deixa sair da tela
+            if self.__position.y < 0:
+                self.__position.y = 0
+                self.__velocity.y = 0
+            if self.__position.y > SCREEN_HEIGHT:
+                self.__position.y = SCREEN_HEIGHT
+                self.__velocity.y = 0
+            return
 
         # 1. Calcular a aceleração resultante
         current_acceleration = self.__gravity_acceleration
@@ -116,5 +143,7 @@ class SkyPlayer(Entity):
 
     def die(self):
         """Sobrescreve o método die para parar os movimentos."""
+        self.__is_alive = False
         self.__is_thrusting = False
         self.__is_diving = False
+        # Não chama game over aqui - deixa a cena decidir quando fazer isso

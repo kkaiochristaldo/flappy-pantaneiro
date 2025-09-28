@@ -1,6 +1,8 @@
+import math
 import pygame as pg
 from core import Entity, EntityFactory
 from config import SCREEN_WIDTH, SCREEN_HEIGHT
+import random 
 
 
 class SkyObstacle(Entity):
@@ -35,17 +37,20 @@ class FallingRock(SkyObstacle):
 
 class ZigZagBee(SkyObstacle):
     def __init__(self, cfg):
-        y = SCREEN_HEIGHT // 2
-        super().__init__(
-            cfg["zigzag_bee_cfg"], SCREEN_WIDTH, y, speed_x=-200, speed_y=150
-        )
+        y = random.randint(50, SCREEN_HEIGHT - 100)
+        super().__init__(cfg["zigzag_bee_cfg"], SCREEN_WIDTH, y, speed_x=-150, speed_y=0)
+        
+        self.amplitude = random.randint(80, 120)  # Altura do zigue-zague
+        self.frequency = random.uniform(3.0, 5.0)  # Velocidade do zigue-zague
         self.timer = 0
-
+        self.original_y = y
+        
     def update(self, delta_time):
-        self.timer += delta_time
-        if self.timer >= 0.5:
-            self._velocity.y *= -1
-            self.timer = 0
+        self.timer += delta_time * self.frequency
+        
+        # Movimento senoidal mais suave
+        self._position.y = self.original_y + math.sin(self.timer) * self.amplitude
+        
         super().update(delta_time)
 
 
@@ -64,6 +69,7 @@ class ObstacleSpawner:
 
         self._factory.register(FallingRock, weight=10)
         self._factory.register(ZigZagBee, weight=10)
+        self._factory.register(GroundTronco, weight=15)
 
     def update(self, delta_time: float, current_speed: float) -> SkyObstacle | None:
         """
@@ -86,3 +92,40 @@ class ObstacleSpawner:
             return self._factory.create_random(self._config)
 
         return None
+
+class GroundTronco(SkyObstacle):
+    def __init__(self, cfg):
+        # Altura aleatória mais limitada para evitar esticamento excessivo
+        tronco_height = random.randint(120, 250)  # Reduzido para ficar mais natural
+        
+        # Posição: vem da direita
+        x = SCREEN_WIDTH + 50
+        
+        super().__init__(cfg["tronco_cfg"], x, 0, speed_x=-200, speed_y=0)
+        
+        # Ajusta a altura limitando o redimensionamento
+        if hasattr(self, 'image'):
+            original_size = self.image.get_size()
+            
+            # Se a altura desejada for maior que a original, usa a original
+            if tronco_height > original_size[1]:
+                final_height = original_size[1]
+            else:
+                final_height = tronco_height
+            
+            # Mantém a proporção
+            aspect_ratio = original_size[0] / original_size[1]
+            new_width = int(final_height * aspect_ratio)
+            
+            self.image = pg.transform.scale(self.image, (new_width, final_height))
+            self.rect = self.image.get_rect()
+            self.rect.centerx = x
+            self.rect.bottom = SCREEN_HEIGHT  # Base sempre no chão
+            self.mask = pg.mask.from_surface(self.image)
+    
+    def update(self, delta_time):
+        """Atualiza o tronco que se move horizontalmente"""
+        super().update(delta_time)
+        
+        # Mantém a base sempre no chão durante o movimento
+        self.rect.bottom = SCREEN_HEIGHT

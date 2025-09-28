@@ -4,7 +4,6 @@ import pygame as pg
 from config import FPS, SCREEN_WIDTH, SCREEN_HEIGHT # Será alterado
 from core import GameState
 
-
 def main():
     """Função principal do jogo."""
     # Inicialização do Pygame

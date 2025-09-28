@@ -177,3 +177,148 @@ class EnemySpawner:
             return self._factory.create_random(self._config, player_ref=player_ref)
 
         return None
+
+
+class JacareWarning:
+    """
+    Bolinha verde de aviso que aparece quando o player se aproxima da borda.
+    """
+    def __init__(self):
+        self.visible = False
+        self.radius = 8
+        self.color = (0, 255, 0)
+        self.x = SCREEN_WIDTH - 20
+        self.y = SCREEN_HEIGHT - 50
+        
+    def update(self, player_y):
+        warning_threshold = SCREEN_HEIGHT - 150
+        
+        if player_y >= warning_threshold:
+            self.visible = True
+            # A bolinha segue a posição Y do player
+            self.y = min(player_y, SCREEN_HEIGHT - 20)
+        else:
+            self.visible = False
+            
+    def render(self, screen):
+        if self.visible:
+            pg.draw.circle(screen, self.color, (int(self.x), int(self.y)), self.radius)
+
+
+class Jacare(Entity):
+    """
+    Jacaré que sobe de baixo da tela quando o player toca a borda inferior.
+    """
+    
+    def __init__(self, cfg, player_ref):
+        # Começa escondido abaixo da tela
+        start_x = player_ref.position.x
+        start_y = SCREEN_HEIGHT + 150
+        
+        # Chama o construtor da Entity corretamente
+        super().__init__(cfg["jacare_cfg"], start_x, start_y)
+        
+        self.player = player_ref
+        self._position = pg.math.Vector2(start_x, start_y)
+        self.target_y = SCREEN_HEIGHT - 30
+        self.speed = 200
+        self.state = "rising"
+        self.attack_timer = 0
+        self.mouth_opened = False  # Controla se a boca já abriu
+        
+        # Atualiza a posição inicial do rect
+        self.rect.center = (int(self._position.x), int(self._position.y))
+        
+    def update(self, delta_time: float):
+        if self.state == "rising":
+            # Sobe até a posição alvo
+            self._position.y -= self.speed * delta_time
+            
+            if self._position.y <= self.target_y:
+                self._position.y = self.target_y
+                self.state = "waiting"
+                self.attack_timer = 0
+                
+        elif self.state == "waiting":
+            self.attack_timer += delta_time
+            if self.attack_timer >= 1.0:  # Espera 1 segundo
+                self.state = "attacking"
+                self.attack_timer = 0
+                
+        elif self.state == "attacking":
+            if not self.mouth_opened:
+                # Para a animação em um frame específico (boca aberta)
+                # Assumindo que o frame 4-5 seja com a boca mais aberta
+                self._current_frame = 4  # Ajuste conforme necessário
+                self._animation_finished = True  # Para a animação
+                
+                # Reposiciona o player para dentro da boca
+                self.player._SkyPlayer__position.x = self._position.x + 10  # Ligeiramente à direita
+                self.player._SkyPlayer__position.y = self._position.y - 20   # Dentro da boca
+                
+                self.mouth_opened = True
+                
+            self.attack_timer += delta_time
+            if self.attack_timer >= 2.0:  # Mantém por 2 segundos
+                self.player.die()
+                self.state = "finished"
+        
+        # Atualiza posição do rect
+        self.rect.center = (int(self._position.x), int(self._position.y))
+        
+        # Só chama super().update() se a animação não estiver pausada
+        if not self.mouth_opened:
+            super().update(delta_time)
+
+class FlyBoss(Entity):
+    def __init__(self, cfg, player_ref):
+        super().__init__(cfg["fly_boss_cfg"], SCREEN_WIDTH - 100, 150)
+        
+        self.player = player_ref
+        self._position = pg.math.Vector2(SCREEN_WIDTH - 100, 150)
+        self.speed = 100
+        self.health = 5
+        self.state = "idle"  # idle, shooting
+        self.shoot_timer = 0
+        self.shoot_interval = 2.0
+        self.shoot_duration = 0.5  # Tempo que fica na animação de tiro
+        self.shooting_timer = 0
+        self.move_direction = 1
+        self.config = cfg
+        
+        # NÃO redimensiona - deixa o tamanho original para testar
+        self.rect.center = self._position
+    
+    def update(self, delta_time):
+        # Movimento vertical
+        self._position.y += self.move_direction * self.speed * delta_time
+        
+        if self._position.y <= 100:
+            self.move_direction = 1
+        elif self._position.y >= SCREEN_HEIGHT - 200:
+            self.move_direction = -1
+        
+        # Sistema de tiro
+        self.shoot_timer += delta_time
+        
+        if self.state == "idle":
+            if self.shoot_timer >= self.shoot_interval:
+                self.state = "shooting"
+                self.shooting_timer = 0
+        
+        elif self.state == "shooting":
+            self.shooting_timer += delta_time
+            
+            if self.shooting_timer >= self.shoot_duration:
+                self.state = "idle"
+                self.shoot_timer = 0
+                # Retorna projétil para ser processado pela cena
+                return self._shoot_at_player()
+        
+        self.rect.center = (int(self._position.x), int(self._position.y))
+        super().update(delta_time)
+        return None
+    
+    def _shoot_at_player(self):
+        from .projectiles import Projectile
+        return Projectile(self.config, self._position.x - 30, self._position.y, self.player.position)
