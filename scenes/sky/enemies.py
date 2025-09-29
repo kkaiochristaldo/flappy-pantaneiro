@@ -3,6 +3,7 @@ import random
 from core import Entity, EntityFactory
 from config import SCREEN_WIDTH, SCREEN_HEIGHT
 from .player import SkyPlayer
+from .projectiles import Projectile
 
 
 class Enemy(Entity):
@@ -163,7 +164,7 @@ class EnemySpawner:
         self._factory.register(HomingMissile, weight=40)
 
     def update(
-        self, delta_time: float, current_speed: float, player_ref
+        self, delta_time: float, current_speed: float, player_ref, allow_drones: bool = False
     ) -> Enemy | None:
         """
         Verifica se é hora de gerar um novo inimigo.
@@ -174,7 +175,11 @@ class EnemySpawner:
         if self._timer >= spawn_interval:
             self._timer = 0
             # Passa a configuração E a referência do jogador para o inimigo ser criado
-            return self._factory.create_random(self._config, player_ref=player_ref)
+            enemy = self._factory.create_random(self._config, player_ref=player_ref)
+            # Bloqueia drones se boss ainda não apareceu
+            if isinstance(enemy, ChaserDrone) and not allow_drones:
+                return None
+            return enemy
 
         return None
 
@@ -211,8 +216,8 @@ class Jacare(Entity):
     """
     
     def __init__(self, cfg, player_ref):
-        # Começa escondido abaixo da tela
-        start_x = player_ref.position.x
+        # Começa escondido abaixo da tela, mais à direita do player
+        start_x = player_ref.position.x + 40  # 40 pixels à direita
         start_y = SCREEN_HEIGHT + 150
         
         # Chama o construtor da Entity corretamente
@@ -253,8 +258,8 @@ class Jacare(Entity):
                 self._animation_finished = True  # Para a animação
                 
                 # Reposiciona o player para dentro da boca
-                self.player._SkyPlayer__position.x = self._position.x + 10  # Ligeiramente à direita
-                self.player._SkyPlayer__position.y = self._position.y - 20   # Dentro da boca
+                self.player._SkyPlayer__position.x = self._position.x + 60  # Move mais para direita
+                self.player._SkyPlayer__position.y = self._position.y - 30  # Ajusta altura
                 
                 self.mouth_opened = True
                 
@@ -272,53 +277,161 @@ class Jacare(Entity):
 
 class FlyBoss(Entity):
     def __init__(self, cfg, player_ref):
-        super().__init__(cfg["fly_boss_cfg"], SCREEN_WIDTH - 100, 150)
-        
+        super().__init__(cfg["fly_boss_cfg"], SCREEN_WIDTH + 150, 150)
+
         self.player = player_ref
-        self._position = pg.math.Vector2(SCREEN_WIDTH - 100, 150)
+        self._position = pg.math.Vector2(SCREEN_WIDTH + 150, 150)  # Começa fora da tela
+        self._original_x = SCREEN_WIDTH - 100  # Posição final
+        self.entering = True  # Flag para entrada
         self.speed = 100
-        self.health = 5
-        self.state = "idle"  # idle, shooting
-        self.shoot_timer = 0
-        self.shoot_interval = 2.0
-        self.shoot_duration = 0.5  # Tempo que fica na animação de tiro
-        self.shooting_timer = 0
+        self.state = "idle"
+        self.attack_timer = 0
+        self.attack_cooldown = 8.0
         self.move_direction = 1
         self.config = cfg
+        self.is_charging = False
+        self.telegraph_timer = 0
+        self.telegraph_duration = 1.0
+        self.is_telegraphing = False
+        self.charge_direction = None  # Direção fixa do ataque
+        self.battle_duration = 30.0  # Boss fica 20 segundos na tela
+        self.battle_timer = 0
+        self.leaving = False
+        self.charge_start_pos = None
+
+        self.shoot_timer = 0
+        self.shoot_interval = 2.0 
         
-        # NÃO redimensiona - deixa o tamanho original para testar
+        if hasattr(self, 'image'):
+            self.image = pg.transform.flip(self.image, True, False)
+            self.mask = pg.mask.from_surface(self.image)
+        
         self.rect.center = self._position
     
     def update(self, delta_time):
-        # Movimento vertical
-        self._position.y += self.move_direction * self.speed * delta_time
+        # Entrada suave do boss
+        if self.entering:
+            self._position.x -= 200 * delta_time  # Move para esquerda
+            if self._position.x <= self._original_x:
+                self._position.x = self._original_x
+                self.entering = False
+            # Não faz outras ações durante entrada
+            self.rect.center = (int(self._position.x), int(self._position.y))
+            super().update(delta_time)
+            return None
         
-        if self._position.y <= 100:
-            self.move_direction = 1
-        elif self._position.y >= SCREEN_HEIGHT - 200:
-            self.move_direction = -1
+        # Contador de tempo de batalha
+        if not self.entering and not self.leaving:
+            self.battle_timer += delta_time
+            if self.battle_timer >= self.battle_duration:
+                self.leaving = True
+
+        # Boss saindo da tela
+        if self.leaving:
+            self._position.x += 250 * delta_time  # Sai pela direita
+            if self._position.x > SCREEN_WIDTH + 200:
+                self.kill()  # Remove o boss
+            self.rect.center = (int(self._position.x), int(self._position.y))
+            super().update(delta_time)
+            return None
+        
+        # Movimento vertical normal
+        if not self.is_charging:
+            self._position.y += self.move_direction * self.speed * delta_time
+            
+            if self._position.y <= 100:
+                self.move_direction = 1
+            elif self._position.y >= SCREEN_HEIGHT - 200:
+                self.move_direction = -1
+            
+            # Retorna suavemente para posição X original
+            if self._position.x < self._original_x:
+                self._position.x += 150 * delta_time
+                if self._position.x > self._original_x:
+                    self._position.x = self._original_x
+        
+        # Sistema de ataque com telegrafação
+        self.attack_timer += delta_time
+
+        # Inicia telegrafação
+        if self.attack_timer >= self.attack_cooldown and not self.is_telegraphing and not self.is_charging:
+            self.is_telegraphing = True
+            self.telegraph_timer = 0
+            self.attack_timer = 0
+            
+            # CALCULA E TRAVA a direção do ataque AGORA
+            target = pg.math.Vector2(self.player.position.x, self.player.position.y)
+            self.charge_direction = target - self._position
+            if self.charge_direction.length() > 0:
+                self.charge_direction.normalize_ip()
+
+        # Conta tempo de telegrafação
+        if self.is_telegraphing:
+            self.telegraph_timer += delta_time
+            if self.telegraph_timer >= self.telegraph_duration:
+                self.is_telegraphing = False
+                self.is_charging = True
+                self.charge_start_pos = self._position.copy()
+
+        if self.is_charging:
+            # Investida em linha reta na direção TRAVADA
+            self._position += self.charge_direction * 450 * delta_time  # Mais rápido mas previsível
+            
+            # Para quando sair da tela ou ir muito longe
+            if (self._position.x < -100 or self._position.x > SCREEN_WIDTH + 100 or
+                self._position.y < -100 or self._position.y > SCREEN_HEIGHT + 100):
+                self.is_charging = False
+        
+        # Retorna suavemente após ataque
+        if not self.is_charging and not self.is_telegraphing and self._position.x != self._original_x:
+            # Move de volta para posição original
+            diff = self._original_x - self._position.x
+            if abs(diff) > 5:
+                self._position.x += (diff / abs(diff)) * 150 * delta_time
+            else:
+                self._position.x = self._original_x
+            
+            # Também corrige Y se necessário
+            if self._position.y < 100:
+                self._position.y = 100
+            elif self._position.y > SCREEN_HEIGHT - 200:
+                self._position.y = SCREEN_HEIGHT - 200
         
         # Sistema de tiro
         self.shoot_timer += delta_time
+        projectile = None
         
-        if self.state == "idle":
-            if self.shoot_timer >= self.shoot_interval:
-                self.state = "shooting"
-                self.shooting_timer = 0
-        
-        elif self.state == "shooting":
-            self.shooting_timer += delta_time
-            
-            if self.shooting_timer >= self.shoot_duration:
-                self.state = "idle"
-                self.shoot_timer = 0
-                # Retorna projétil para ser processado pela cena
-                return self._shoot_at_player()
+        if self.shoot_timer >= self.shoot_interval and not self.is_charging:
+            self.shoot_timer = 0
+            projectile = self._shoot_at_player()
         
         self.rect.center = (int(self._position.x), int(self._position.y))
         super().update(delta_time)
-        return None
-    
+        
+        # Flip da sprite
+        if hasattr(self, '_animations') and self._current_animation:
+            anim_data = self._animations[self._current_animation]
+            if anim_data["frames"]:
+                self.image = pg.transform.flip(anim_data["frames"][self._current_frame], True, False)
+                self.mask = pg.mask.from_surface(self.image)
+        
+        return projectile
+
     def _shoot_at_player(self):
-        from .projectiles import Projectile
-        return Projectile(self.config, self._position.x - 30, self._position.y, self.player.position)
+            """
+            Cria e retorna um projétil direcionado à posição atual do jogador.
+            """
+            # Calcula o vetor de direção do chefe para o jogador
+            direction = self.player.position - self._position
+            if direction.length() > 0:
+                direction.normalize_ip()  # Normaliza o vetor para ter comprimento 1
+
+            # Cria a instância do projétil, passando os parâmetros necessários
+            # (Estou assumindo que o projétil precisa de uma config, posição e direção)
+            projectile = Projectile(
+                self.config["projectile_cfg"], # Configuração do projétil
+                self._position.x,             # Posição X inicial
+                self._position.y,             # Posição Y inicial
+                direction                     # Direção do movimento
+            )
+            return projectile

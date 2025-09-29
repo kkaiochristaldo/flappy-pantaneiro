@@ -12,12 +12,13 @@ class SkyPlayer(Entity):
         # Configurações de física
         self.__position = pg.math.Vector2(start_x, start_y)
         self.__velocity = pg.math.Vector2(0, 0)
-        self.__gravity_acceleration = 980
-        self.__thrust_acceleration = 2000
-        self.__dive_acceleration = 1800
-        self.__tap_impulse = 120
-        self.__max_fall_speed = 600
-        self.__max_rise_speed = -500
+        self.__gravity_acceleration = 400  # Reduz gravidade para voo mais controlado
+        self.__thrust_acceleration = 800   # Reduz impulso
+        self.__dive_acceleration = 800     # Reduz mergulho
+        self.__tap_impulse = 0             # Remove impulso instantâneo
+        self.__max_fall_speed = 400        # Reduz velocidade de queda
+        self.__max_rise_speed = -400       # Reduz velocidade de subida
+        self.__hover_stability = 0.92      # Nova propriedade para estabilização
 
         # Configurações de estado
         self.__is_alive = True
@@ -88,11 +89,17 @@ class SkyPlayer(Entity):
             return
 
         # 1. Calcular a aceleração resultante
-        current_acceleration = self.__gravity_acceleration
         if self.__is_thrusting:
-            current_acceleration -= self.__thrust_acceleration
-        if self.__is_diving:
-            current_acceleration += self.__dive_acceleration
+            # Subindo ativamente
+            current_acceleration = -self.__thrust_acceleration
+        elif self.__is_diving:
+            # Descendo ativamente
+            current_acceleration = self.__dive_acceleration
+        else:
+            # Modo hover - estabiliza gradualmente
+            current_acceleration = self.__gravity_acceleration
+            # Aplica resistência para estabilizar
+            self.__velocity.y *= self.__hover_stability
 
         # 2. Aplicar a aceleração à velocidade
         self.__velocity.y += current_acceleration * delta_time
@@ -126,10 +133,6 @@ class SkyPlayer(Entity):
     def start_thrust(self):
         self.__is_thrusting = True
         self.__is_diving = False
-        # Aplicar um impulso inicial para dar mais responsividade
-        self.__velocity.y = max(
-            self.__velocity.y - self.__tap_impulse, self.__max_rise_speed
-        )
 
     def stop_thrust(self):
         self.__is_thrusting = False

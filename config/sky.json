@@ -73,15 +73,15 @@
         "image": "assets/images/sky/enemies/fly_idle.png",
         "data": "assets/images/sky/enemies/fly_idle_converted.json"
       },
-      "fallback_size": [64, 64],
+      "fallback_size": [96, 96],
       "fallback_color": [100, 50, 200]
     },
     "projectile_cfg": {
       "spritesheet": {
         "image": "assets/images/sky/enemies/Sprite-0001.png",
-        "data": "assets/images/sky/enemies/Sprite-0001.json"
+        "data": "assets/images/sky/enemies/Sprite-0001_converted.json"
       },
-      "fallback_size": [16, 8],
+      "fallback_size": [32, 16],
       "fallback_color": [255, 100, 0]
     }
   }

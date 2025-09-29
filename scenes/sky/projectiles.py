@@ -4,18 +4,22 @@ from core import Entity
 from config import SCREEN_WIDTH, SCREEN_HEIGHT
 
 class Projectile(Entity):
-    def __init__(self, cfg, x, y, target_pos):
-        super().__init__(cfg["projectile_cfg"], x, y)
+    def __init__(self, cfg, x, y, direction):
+
+        super().__init__(cfg, x, y)
         
         self._position = pg.math.Vector2(x, y)
+
         
-        # Calcula direção para o target
-        direction = target_pos - self._position
-        if direction.length() > 0:
-            direction.normalize_ip()
+        self._velocity = direction * 400  # A velocidade pode ser ajustada
+        self.lifetime = 5.0
         
-        self._velocity = direction * 300  # Velocidade do projétil
-        self.lifetime = 5.0  # 5 segundos de vida
+        # Rotaciona sprite na direção do movimento
+        if hasattr(self, 'image'):
+            angle = pg.math.Vector2(1, 0).angle_to(direction)
+            self.image = pg.transform.rotate(self.image, -angle)
+            self.rect = self.image.get_rect(center=self.rect.center)
+            self.mask = pg.mask.from_surface(self.image)
         
     def update(self, delta_time):
         super().update(delta_time)

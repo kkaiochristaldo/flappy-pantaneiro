@@ -60,21 +60,25 @@ class SkyScene:
         self.player_died = False
 
         # Sistema de coletáveis
-        self.coins_group = pg.sprite.Group()
+        
         self.powerups_group = pg.sprite.Group() 
+        self.active_powerups = []  # Lista de power-ups ativos
         self.projectiles_group = pg.sprite.Group()
-        self.coins_collected = 0
-        self.coin_spawn_timer = 0
+        
         self.powerup_spawn_timer = 0
 
         # Timers de spawn
-        self.coin_spawn_interval = 4.0  # Moeda a cada 4 segundos
         self.powerup_spawn_interval = 15.0  # Power-up a cada 15 segundos
 
         # Boss battle system
         self.boss_timer = 0
         self.boss_interval = 30.0  # Boss a cada 30 segundos
         self.current_boss = None
+
+        self.boss_active = False
+        self.boss_appeared_once = False  # Para controlar aparição do drone
+
+        self.shield_effect_timer = 0
 
     def handle_event(self, event: pg.event.Event):
         """Processa eventos do Pygame."""
@@ -157,13 +161,6 @@ class SkyScene:
         self.__spawn_obstacles(delta_time)
         self.__spawn_enemies(delta_time)
 
-        # Spawn de moedas
-        self.coin_spawn_timer += delta_time
-        if self.coin_spawn_timer >= self.coin_spawn_interval:
-            self.coin_spawn_timer = 0
-            coin = self._create_coin()
-            self.coins_group.add(coin)
-            self.all_sprites_group.add(coin)
 
         # Spawn de power-ups  
         self.powerup_spawn_timer += delta_time
@@ -173,22 +170,58 @@ class SkyScene:
             self.powerups_group.add(powerup)
             self.all_sprites_group.add(powerup)
 
-        # Colisão com moedas
-        collected_coins = pg.sprite.spritecollide(self.player, self.coins_group, True)
-        self.coins_collected += len(collected_coins)
 
-        # Atualizar grupos
-        self.coins_group.update(delta_time)
         self.powerups_group.update(delta_time)
         self.projectiles_group.update(delta_time)
 
-        # Boss spawn
         self.boss_timer += delta_time
-        if self.boss_timer >= self.boss_interval and not self.current_boss:
+
+        # Boss spawn
+        if self.boss_timer >= self.boss_interval and not self.current_boss and not self.boss_active:
             self.current_boss = FlyBoss(self.config["enemies_cfg"], self.player)
             self.enemies_group.add(self.current_boss)
             self.all_sprites_group.add(self.current_boss)
             self.boss_timer = 0
+            self.boss_active = True
+            self.boss_appeared_once = True
+
+        # Verifica se boss ainda existe (pode ter morrido por colisão ou saído)
+        if self.current_boss and self.current_boss not in self.enemies_group:
+            self.current_boss = None
+            self.boss_active = False
+
+        collected_powerups = pg.sprite.spritecollide(self.player, self.powerups_group, True)
+        for powerup in collected_powerups:
+            self._activate_powerup(powerup.power_type)
+
+        # Atualizar power-ups ativos
+        for powerup_effect in self.active_powerups[:]:
+            powerup_effect["timer"] -= delta_time
+            if powerup_effect["timer"] <= 0:
+                self._deactivate_powerup(powerup_effect)
+                self.active_powerups.remove(powerup_effect)
+
+    def _activate_powerup(self, power_type):
+        """Ativa efeito do power-up"""
+        if power_type == "shield":
+            self.player.invincible = True
+            self.active_powerups.append({"type": "shield", "timer": 5.0})
+        elif power_type == "speed":
+            # CORREÇÃO FINAL: Modificar a velocidade inicial
+            self.scroll_manager._initial_speed *= 0.5
+            self.active_powerups.append({"type": "speed", "timer": 5.0})
+        elif power_type == "shoot":
+            for sprite in list(self.obstacles_group) + list(self.enemies_group):
+                if not isinstance(sprite, FlyBoss):
+                    sprite.kill()
+
+    def _deactivate_powerup(self, powerup_effect):
+        """Desativa efeito quando expira"""
+        if powerup_effect["type"] == "shield":
+            self.player.invincible = False
+        elif powerup_effect["type"] == "speed":
+            # CORREÇÃO FINAL: Restaurar a velocidade inicial
+            self.scroll_manager._initial_speed *= 2.0
 
     def render(self, screen: pg.Surface):
         """Renderiza o cenário."""
@@ -207,54 +240,83 @@ class SkyScene:
         # Renderizar aviso do jacaré (mais visível)
         self._render_jacare_warning(screen)
 
+        self._render_shield_effect(screen)
+
+        self._render_boss_telegraph(screen)
+
     def _render_ui(self, screen):
         """Renderiza interface melhorada"""
-        # Fundo semi-transparente para a pontuação
-        ui_surface = pg.Surface((300, 80), pg.SRCALPHA)
-        ui_surface.fill((0, 0, 0, 128))  # Preto transparente
+        ui_surface = pg.Surface((300, 100), pg.SRCALPHA)  # Aumentei altura
+        ui_surface.fill((0, 0, 0, 128))
         screen.blit(ui_surface, (10, 10))
         
-        # Pontuação estilizada
         font_big = pg.font.SysFont("Arial", 32, bold=True)
         font_small = pg.font.SysFont("Arial", 18)
         
         score_text = font_big.render(f"{self.score_manager.get_score()}m", True, (255, 255, 255))
         label_text = font_small.render("DISTÂNCIA", True, (200, 200, 200))
-
-        # Contador de moedas
-        coins_text = font_small.render(f"MOEDAS: {self.coins_collected}", True, (255, 215, 0))
-        screen.blit(coins_text, (20, 70))
         
         screen.blit(label_text, (20, 20))
         screen.blit(score_text, (20, 40))
-
+        
     def _render_jacare_warning(self, screen):
-        """Renderiza aviso do jacaré mais visível"""
         if self.jacare_warning.visible:
             pulse = (math.sin(pg.time.get_ticks() * 0.01) + 1) / 2
             
-            # Posição do aviso
-            warning_pos = (int(self.jacare_warning.x), int(self.jacare_warning.y))
+            # Posição ajustada - mais longe da borda
+            warning_pos = (SCREEN_WIDTH - 80, int(self.jacare_warning.y))  # Muda de x para posição fixa
             
-            # Círculo pulsante maior
+            # Círculo pulsante
             pg.draw.circle(screen, (255, 0, 0), warning_pos, int(20 + 5 * pulse))
             pg.draw.circle(screen, (255, 255, 0), warning_pos, 15)
             
-            # Texto de aviso POSICIONADO CORRETAMENTE
+            # Texto centralizado acima do círculo
             font = pg.font.SysFont("Arial", 20, bold=True)
             warning_text = font.render("PERIGO!", True, (255, 0, 0))
-            # Centraliza o texto acima do círculo
             text_rect = warning_text.get_rect()
             text_rect.centerx = warning_pos[0]
-            text_rect.bottom = warning_pos[1] - 30  # 30 pixels acima do círculo
+            text_rect.bottom = warning_pos[1] - 30
             
-            # Fundo semi-transparente para o texto
+            # Fundo para o texto
             bg_surface = pg.Surface((text_rect.width + 10, text_rect.height + 6), pg.SRCALPHA)
             bg_surface.fill((0, 0, 0, 180))
             screen.blit(bg_surface, (text_rect.x - 5, text_rect.y - 3))
             screen.blit(warning_text, text_rect)
+    
+    def _render_shield_effect(self, screen):
+        """Renderiza efeito visual do escudo"""
+        has_shield = any(p["type"] == "shield" for p in self.active_powerups)
+        
+        if has_shield:
+            self.shield_effect_timer += 0.05
+            # Escudo pulsante azul
+            radius = int(40 + 5 * math.sin(self.shield_effect_timer))
+            shield_surface = pg.Surface((radius * 2, radius * 2), pg.SRCALPHA)
+            
+            # Círculo com transparência
+            pg.draw.circle(shield_surface, (100, 150, 255, 100), (radius, radius), radius, 3)
+            pg.draw.circle(shield_surface, (150, 200, 255, 50), (radius, radius), radius - 5, 2)
+            
+            pos = (int(self.player.position.x - radius), int(self.player.position.y - radius))
+            screen.blit(shield_surface, pos)
+
+    def _render_boss_telegraph(self, screen):
+        """Renderiza aviso visual quando boss vai atacar"""
+        if self.current_boss and hasattr(self.current_boss, 'is_telegraphing') and self.current_boss.is_telegraphing:
+            # Linha vermelha piscante do boss até o player
+            alpha = int(128 + 127 * abs(math.sin(pg.time.get_ticks() * 0.01)))
+            boss_pos = (int(self.current_boss._position.x), int(self.current_boss._position.y))
+            player_pos = (int(self.player.position.x), int(self.player.position.y))
+            
+            # Superfície temporária para linha com transparência
+            line_surface = pg.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pg.SRCALPHA)
+            pg.draw.line(line_surface, (255, 0, 0, alpha), boss_pos, player_pos, 3)
+            screen.blit(line_surface, (0, 0))
 
     def __spawn_obstacles(self, delta_time):
+        if self.boss_active:
+            return
+        
         new_obstacle = self.obstacle_spawner.update(
             delta_time, self.scroll_manager.current_speed
         )
@@ -264,10 +326,14 @@ class SkyScene:
             self.all_sprites_group.add(new_obstacle)
 
     def __spawn_enemies(self, delta_time):
+        # Não spawna inimigos durante boss battle
+        if self.boss_active:
+            return
+            
         new_enemy = self.enemy_spawner.update(
-            delta_time, self.scroll_manager.current_speed, self.player
+            delta_time, self.scroll_manager.current_speed, self.player, self.boss_appeared_once
         )
-
+        
         if new_enemy:
             self.enemies_group.add(new_enemy)
             self.all_sprites_group.add(new_enemy)
@@ -285,6 +351,5 @@ class SkyScene:
         return Coin()
 
     def _create_powerup(self):
-        """Cria um power-up usando a classe correta"""
-        power_types = ["shield", "speed", "magnet"]
+        power_types = ["shield", "speed", "shoot"]  # Mudou magnet para shoot
         return PowerUp(random.choice(power_types))

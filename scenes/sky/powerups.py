@@ -21,12 +21,12 @@ class PowerUp(Entity):
         
     def _get_color(self, power_type):
         colors = {
-            "shield": (0, 150, 255),    # Azul
-            "speed": (255, 255, 0),     # Amarelo  
-            "magnet": (0, 255, 0)       # Verde
+            "shield": (0, 150, 255),
+            "speed": (255, 255, 0),
+            "shoot": (255, 50, 50)  # Vermelho para tiro
         }
         return colors.get(power_type, (255, 0, 255))
-    
+
     def _create_sprite(self):
         surface = pg.Surface((32, 32), pg.SRCALPHA)
         color = self._get_color(self.power_type)
@@ -35,12 +35,17 @@ class PowerUp(Entity):
             pg.draw.circle(surface, color, (16, 16), 14)
             pg.draw.circle(surface, (255, 255, 255), (16, 16), 10, 2)
         elif self.power_type == "speed":
-            # Raio/lightning
             points = [(16, 5), (12, 12), (18, 12), (14, 27), (20, 15), (14, 15)]
             pg.draw.polygon(surface, color, points)
-        elif self.power_type == "magnet":
-            # Ferradura de ímã
-            pg.draw.arc(surface, color, (8, 8, 16, 16), 0, 3.14, 4)
+        elif self.power_type == "shoot":
+            # Raio/explosão
+            center = (16, 16)
+            for angle in range(0, 360, 45):
+                import math
+                rad = math.radians(angle)
+                x = center[0] + int(12 * math.cos(rad))
+                y = center[1] + int(12 * math.sin(rad))
+                pg.draw.line(surface, color, center, (x, y), 3)
             
         self.image = surface
         self.mask = pg.mask.from_surface(self.image)

@@ -1,0 +1,14 @@
+{
+  "target_size": [32, 16],
+  "animations": [
+    {
+      "name": "projectile",
+      "frames_rect": [
+        [0, 0, 16, 8],
+        [16, 0, 16, 8]
+      ],
+      "loop": true,
+      "speed": 0.1
+    }
+  ]
+}

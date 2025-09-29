@@ -27,18 +27,18 @@ class SkyObstacle(Entity):
             self.kill()
 
 
-class FallingRock(SkyObstacle):
-    def __init__(self, cfg):
-        y = -50  # fora da tela
-        super().__init__(
-            cfg["falling_rock_cfg"], SCREEN_WIDTH, y, speed_x=-100, speed_y=200
-        )
+# class FallingRock(SkyObstacle):
+#     def __init__(self, cfg):
+#         y = -50  # fora da tela
+#         super().__init__(
+#             cfg["falling_rock_cfg"], SCREEN_WIDTH, y, speed_x=-100, speed_y=200
+#         )
 
 
 class ZigZagBee(SkyObstacle):
     def __init__(self, cfg):
         y = random.randint(50, SCREEN_HEIGHT - 100)
-        super().__init__(cfg["zigzag_bee_cfg"], SCREEN_WIDTH, y, speed_x=-150, speed_y=0)
+        super().__init__(cfg["zigzag_bee_cfg"], SCREEN_WIDTH + 80, y, speed_x=-150, speed_y=0)  # +80 pixels fora
         
         self.amplitude = random.randint(80, 120)  # Altura do zigue-zague
         self.frequency = random.uniform(3.0, 5.0)  # Velocidade do zigue-zague
@@ -67,7 +67,7 @@ class ObstacleSpawner:
         self._factory = EntityFactory()
         self._timer = 0.0
 
-        self._factory.register(FallingRock, weight=10)
+        # self._factory.register(FallingRock, weight=10)
         self._factory.register(ZigZagBee, weight=10)
         self._factory.register(GroundTronco, weight=15)
 
@@ -99,7 +99,7 @@ class GroundTronco(SkyObstacle):
         tronco_height = random.randint(120, 250)  # Reduzido para ficar mais natural
         
         # Posição: vem da direita
-        x = SCREEN_WIDTH + 50
+        x = SCREEN_WIDTH + 100  # Mais longe da borda
         
         super().__init__(cfg["tronco_cfg"], x, 0, speed_x=-200, speed_y=0)
         
