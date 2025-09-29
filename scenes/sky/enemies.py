@@ -217,7 +217,7 @@ class Jacare(Entity):
     
     def __init__(self, cfg, player_ref):
         # Começa escondido abaixo da tela, mais à direita do player
-        start_x = player_ref.position.x + 40  # 40 pixels à direita
+        start_x = player_ref.position.x + 60  # 40 pixels à direita
         start_y = SCREEN_HEIGHT + 150
         
         # Chama o construtor da Entity corretamente
@@ -253,15 +253,13 @@ class Jacare(Entity):
         elif self.state == "attacking":
             if not self.mouth_opened:
                 # Para a animação em um frame específico (boca aberta)
-                # Assumindo que o frame 4-5 seja com a boca mais aberta
-                self._current_frame = 4  # Ajuste conforme necessário
-                self._animation_finished = True  # Para a animação
-                
-                # Reposiciona o player para dentro da boca
-                self.player._SkyPlayer__position.x = self._position.x + 60  # Move mais para direita
-                self.player._SkyPlayer__position.y = self._position.y - 30  # Ajusta altura
-                
+                self._current_frame = 4
+                self._animation_finished = True
                 self.mouth_opened = True
+            
+            # Mantém o player SEMPRE na posição da boca durante todo o ataque
+            self.player._SkyPlayer__position.x = self._position.x - 60  # Negativo para ir à esquerda
+            self.player._SkyPlayer__position.y = self._position.y  # Ajusta para ficar mais na boca
                 
             self.attack_timer += delta_time
             if self.attack_timer >= 2.0:  # Mantém por 2 segundos
