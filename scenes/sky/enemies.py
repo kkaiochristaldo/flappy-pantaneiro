@@ -53,7 +53,7 @@ class ChaserDrone(Enemy):
         super().__init__(
             cfg["chaser_drone_cfg"], SCREEN_WIDTH + 50, start_y, player_ref
         )
-        self.speed = 250
+        self.speed = 200
         self.disengage_distance = 250
 
         self.vertical_strength = 0.8
@@ -61,7 +61,7 @@ class ChaserDrone(Enemy):
         # Atributos para a perseguição "lenta para reagir"
         self._target_direction = pg.math.Vector2(-1, 0)
         self._update_target_timer = 0.0
-        self.reaction_time = 0.3
+        self.reaction_time = 0.2
 
     def update(self, delta_time: float):
         if self._is_homing:
@@ -90,64 +90,6 @@ class ChaserDrone(Enemy):
         super().update(delta_time)
 
 
-class HomingMissile(Enemy):
-    """
-    Um míssil rápido que persegue o jogador em ambos os eixos,
-    mas com uma capacidade de virada vertical muito reduzida.
-    """
-
-    def __init__(self, cfg, player_ref):
-        start_y = random.randint(50, SCREEN_HEIGHT - 50)
-        super().__init__(
-            cfg["homing_missile_cfg"], SCREEN_WIDTH + 50, start_y, player_ref
-        )
-
-        self.speed = 120
-        self.acceleration = 75
-        self.turn_speed = 2.0
-        self._lifetime = 8.0
-        self.disengage_distance = 350
-
-        self.vertical_strength = 0.25
-
-    def update(self, delta_time: float):
-        self._lifetime -= delta_time
-        if self._lifetime <= 0:
-            self.kill()
-            return
-
-        # A lógica de perseguição só acontece se o míssil ainda estiver no modo "homing"
-        if self._is_homing:
-            distance = self._position.distance_to(self.player.position)
-            if distance < self.disengage_distance:
-                self._is_homing = False
-                self.acceleration *= 3
-
-            self.speed += self.acceleration * delta_time
-
-            # 1. Calcula a direção ideal completa (X e Y).
-            target_direction = self.player.position - self._position
-
-            # 2. Amortece o componente Y do vetor alvo.
-            target_direction.y *= self.vertical_strength
-
-            if target_direction.length() > 0:
-                target_direction.normalize_ip()
-
-                # 3. A lógica de interpolação (lerp) agora usa este vetor "amortecido"
-                current_direction = self._velocity.normalize()
-                new_direction = current_direction.lerp(
-                    target_direction, self.turn_speed * delta_time
-                )
-                self._velocity = new_direction * self.speed
-        else:
-            # Se não está mais em modo homing, apenas continua acelerando
-            self.speed += self.acceleration * delta_time
-            self._velocity = self._velocity.normalize() * self.speed
-
-        super().update(delta_time)
-
-
 class EnemySpawner:
     """
     Gerencia a criação e o timing de spawn dos inimigos da DemoScene.
@@ -161,7 +103,6 @@ class EnemySpawner:
         )
 
         self._factory.register(ChaserDrone, weight=60)
-        self._factory.register(HomingMissile, weight=40)
 
     def update(
         self, delta_time: float, current_speed: float, player_ref, allow_drones: bool = False

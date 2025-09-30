@@ -12,9 +12,9 @@ class SkyPlayer(Entity):
         # Configurações de física
         self.__position = pg.math.Vector2(start_x, start_y)
         self.__velocity = pg.math.Vector2(0, 0)
-        self.__gravity_acceleration = 400  # Reduz gravidade para voo mais controlado
-        self.__thrust_acceleration = 800   # Reduz impulso
-        self.__dive_acceleration = 800     # Reduz mergulho
+        self.__gravity_acceleration = 700  # Reduz gravidade para voo mais controlado
+        self.__thrust_acceleration = 1000   # Reduz impulso
+        self.__dive_acceleration = 1000     # Reduz mergulho
         self.__tap_impulse = 0             # Remove impulso instantâneo
         self.__max_fall_speed = 400        # Reduz velocidade de queda
         self.__max_rise_speed = -400       # Reduz velocidade de subida

@@ -174,6 +174,12 @@ class SkyScene:
         self.powerups_group.update(delta_time)
         self.projectiles_group.update(delta_time)
 
+        # --- COLISÃO PROJÉTIL <-> PLAYER ---
+        if not self.player.invincible:
+            if pg.sprite.spritecollide(self.player, self.projectiles_group, True, pg.sprite.collide_mask):
+                self.player.die()
+                self.game_state.change_state(State.GAME_OVER)
+
         self.boss_timer += delta_time
 
         # Boss spawn
