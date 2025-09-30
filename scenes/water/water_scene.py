@@ -12,6 +12,10 @@ from .water_player import WaterPlayer
 from .water_obstacles import WaterObstacleSpawner
 from .water_enemies import WaterEnemySpawner
 
+pg.joystick.init()
+joystick = pg.joystick.Joystick(0)
+joystick.init()
+
 class WaterScene:
     def __init__(self, game_state: GameState):
         self.game_state = game_state
@@ -43,44 +47,68 @@ class WaterScene:
 
     def handle_event(self, event: pg.event.Event):
 
-      if event.type == pg.KEYDOWN:
-        # Se a SETA PARA CIMA for pressionada
-        if event.key == pg.K_UP:
-            self.player.start_thrust()
+        if event.type == pg.KEYDOWN:
+            # Se a SETA PARA CIMA for pressionada
+            if event.key == pg.K_UP:
+                self.player.start_thrust()
 
-        # Se a SETA PARA BAIXO for pressionada
-        elif event.key == pg.K_DOWN:
-            self.player.start_dive()
+            # Se a SETA PARA BAIXO for pressionada
+            elif event.key == pg.K_DOWN:
+                self.player.start_dive()
 
-        # Se a SETA PARA ESQUERDA for pressionada
-        elif event.key == pg.K_LEFT:
-            self.player.start_move_left()
+            # Se a SETA PARA ESQUERDA for pressionada
+            elif event.key == pg.K_LEFT:
+                self.player.start_move_left()
 
-        # Se a SETA PARA DIREITA for pressionada
-        elif event.key == pg.K_RIGHT:
-            self.player.start_move_right()
+            # Se a SETA PARA DIREITA for pressionada
+            elif event.key == pg.K_RIGHT:
+                self.player.start_move_right()
 
-        # Se a tecla ESCAPE for pressionada
-        elif event.key == pg.K_ESCAPE:
-            self.game_state.change_state(State.PAUSE)
+            # Se a tecla ESCAPE for pressionada
+            elif event.key == pg.K_ESCAPE:
+                self.game_state.change_state(State.PAUSE)
 
-      if event.type == pg.KEYUP:
-        # Se a SETA PARA CIMA for solta
-        if event.key == pg.K_UP:
-            self.player.stop_thrust()
+        if event.type == pg.KEYUP:
+            # Se a SETA PARA CIMA for solta
+            if event.key == pg.K_UP:
+                self.player.stop_thrust()
 
-        # Se a SETA PARA BAIXO for solta
-        elif event.key == pg.K_DOWN:
-            self.player.stop_dive()
+            # Se a SETA PARA BAIXO for solta
+            elif event.key == pg.K_DOWN:
+                self.player.stop_dive()
 
-        # Se a SETA PARA ESQUERDA for solta
-        elif event.key == pg.K_LEFT:
-            self.player.stop_move_left()
+            # Se a SETA PARA ESQUERDA for solta
+            elif event.key == pg.K_LEFT:
+                self.player.stop_move_left()
 
-        # Se a SETA PARA DIREITA for solta
-        elif event.key == pg.K_RIGHT:
-            self.player.stop_move_right()
+            # Se a SETA PARA DIREITA for solta
+            elif event.key == pg.K_RIGHT:
+                self.player.stop_move_right()
 
+        if (event.type == pg.JOYAXISMOTION):
+            if event.axis == 1:
+                if int(event.value) == 0:
+                    self.player.stop_dive()
+                    self.player.stop_thrust()
+                elif int(event.value) == -1:
+                    self.player.start_thrust()
+                elif int(event.value) == 1:
+                    self.player.start_dive()
+            if event.axis == 0:
+                if int(event.value) == 0:
+                    self.player.stop_move_left()
+                    self.player.stop_move_right()
+                elif int(event.value) == 1:
+                    self.player.start_move_right()
+                    self.player.stop_move_left()
+                elif int(event.value) == -1:
+                    self.player.start_move_left()
+                    self.player.stop_move_right()
+        
+        if event.type == pg.JOYBUTTONDOWN:
+            if event.button == 8:
+               self.game_state.change_state(State.PAUSE)
+                
     def update(self, delta_time: float):
         """Atualiza o estado do cenário.
 
