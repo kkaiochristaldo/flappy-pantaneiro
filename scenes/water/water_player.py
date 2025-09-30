@@ -73,7 +73,7 @@ class WaterPlayer(Entity):
             self.__max_rise_speed, min(self.__velocity.y, self.__max_fall_speed)
         )
         self.__position.y += self.__velocity.y * delta_time
-
+    
         # --- FÍSICA HORIZONTAL (EIXO X) ---
         accel_x = 0
         if self.__is_moving_left:
@@ -92,20 +92,21 @@ class WaterPlayer(Entity):
             -self.__max_horizontal_speed, min(self.__velocity.x, self.__max_horizontal_speed)
         )
         self.__position.x += self.__velocity.x * delta_time
-
+        w_player = 70;
+        h_player = 30;
         # --- MANTER NA TELA ---
-        if self.__position.y < 0:
-            self.__position.y = 0
+        if self.__position.y < 0 + h_player:
+            self.__position.y = h_player
             self.__velocity.y = 0
-        if self.__position.y > SCREEN_HEIGHT:
-            self.__position.y = SCREEN_HEIGHT
+        if self.__position.y > SCREEN_HEIGHT - h_player:
+            self.__position.y = SCREEN_HEIGHT - h_player
             self.__velocity.y = 0
         
-        if self.__position.x < 0:
-            self.__position.x = 0
+        if self.__position.x < 0 + w_player:
+            self.__position.x = w_player
             self.__velocity.x = 0
-        if self.__position.x > SCREEN_WIDTH:
-            self.__position.x = SCREEN_WIDTH
+        if self.__position.x > SCREEN_WIDTH - w_player:
+            self.__position.x = SCREEN_WIDTH - w_player
             self.__velocity.x = 0
 
     def __update_animation_state(self):
