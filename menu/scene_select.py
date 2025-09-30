@@ -1,6 +1,14 @@
 import pygame as pg
 from core import State, GameState, BaseMenu, FontManager
 
+# =========== adicionado para joystick
+
+pg.joystick.init()
+
+joystick = pg.joystick.Joystick(0)
+joystick.init()
+
+# ======================================
 
 class SceneSelectMenu(BaseMenu):
     def __init__(self, game_state: GameState):
@@ -23,6 +31,14 @@ class SceneSelectMenu(BaseMenu):
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_ESCAPE:
                 self._game_state.change_state(State.MAIN_MENU)
+        
+        # =========== adicionado para joystick
+
+        if (event.type == pg.JOYBUTTONDOWN):
+            if (event.button == 4):
+                self._game_state.change_state(State.MAIN_MENU)
+        
+        # =========================================
 
     def _select_option(self):
         if self._buttons:

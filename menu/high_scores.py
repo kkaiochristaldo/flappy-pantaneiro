@@ -1,6 +1,14 @@
 import pygame as pg
 from core import State, GameState, ScoreManager, FontManager, BaseMenu
 
+# =========== adicionado para joystick
+
+pg.joystick.init()
+
+joystick = pg.joystick.Joystick(0)
+joystick.init()
+
+# ====================================
 
 class HighScoresMenu(BaseMenu):
     def __init__(self, game_state: GameState):
@@ -13,9 +21,12 @@ class HighScoresMenu(BaseMenu):
         self.scores = ScoreManager().high_scores
 
     def handle_event(self, event: pg.event.Event):
-        if event.type == pg.KEYDOWN:
-            self._game_state.change_state(State.MAIN_MENU)
+        # =========== modificado para joystick
 
+        if event.type == pg.KEYDOWN or event.type == pg.JOYBUTTONDOWN:
+            self._game_state.change_state(State.MAIN_MENU)
+        
+        # ====================================================
     def update(self, delta_time=None):
         pass
 
@@ -62,7 +73,7 @@ class HighScoresMenu(BaseMenu):
                     screen.blit(score_text, (x + 10, y + 40 + i * 30))
 
         hint = self.font_hint.render(
-            "Pressione qualquer tecla para voltar", True, (64, 64, 64)
+            "Pressione X para voltar", True, (64, 64, 64)
         )
         screen.blit(
             hint,
