@@ -1,0 +1,56 @@
+{
+    "scene_name": "forest",
+    "background_cfg": {
+        "spritesheet": {
+            "image": "assets/images/forest/background/back_sheet.png",
+            "data": "assets/images/forest/background/back.json"
+        },
+        "fallback_color": [ 34, 139, 34 ]
+    },
+    "scroller_cfg": {
+        "initial_speed": 80.0,
+        "max_difficulty_multiplier": 8.0,
+        "difficulty_increase_rate": 0.02
+    },
+    "enemies_cfg": {
+        "cobra_cfg": {
+            "spritesheet": {
+                "image": "assets/images/forest/enemies/cobra_sheet.png",
+                "data": "assets/images/forest/enemies/cobra.json"
+            },
+            "fallback_size": [ 60, 60 ],
+            "fallback_color": [ 255, 0, 0 ]
+        },
+        "javali_cfg": {
+            "spritesheet": {
+                "image": "assets/images/forest/enemies/javali_sheet.png",
+                "data": "assets/images/forest/enemies/javali.json"
+            },
+            "fallback_size": [ 60, 60 ],
+            "fallback_color": [ 255, 0, 0 ]
+        },
+        "mosquito_cfg": {
+            "spritesheet": {
+                "image": "assets/images/forest/enemies/mosquito_sheet.png",
+                "data": "assets/images/forest/enemies/mosquito.json"
+            },
+            "fallback_size": [ 60, 60 ],
+            "fallback_color": [ 255, 0, 0 ]
+        }
+    },
+    "player_cfg": {
+        "spritesheet": {
+            "image": "assets/images/forest/player/macaco_sheet.png",
+            "data": "assets/images/forest/player/macaco.json"
+        },
+        "fallback_size": [ 50, 50 ],
+        "fallback_color": [ 255, 0, 0 ]
+    },
+    "fogo_cfg": {
+        "spritesheet": {
+            "image": "assets/images/forest/background/fogo_sheet.png",
+            "data": "assets/images/forest/background/fogo.json"
+        },
+        "fallback_color": [ 34, 139, 34 ]
+    }
+}

@@ -1,0 +1,30 @@
+{
+    "target_size": [ 1280, 720 ],
+    "layers": [
+        {
+            "name": "camada0",
+            "frame_rect": [ 0, 0, 1280, 720 ],
+            "parallax_scale": 0.0
+        },
+        {
+            "name": "camada1",
+            "frame_rect": [ 1280, 0, 1280, 720 ],
+            "parallax_scale": 0.2
+        },
+        {
+            "name": "camada2",
+            "frame_rect": [ 2560, 0, 1280, 720 ],
+            "parallax_scale": 0.4
+        },
+        {
+            "name": "camada3",
+            "frame_rect": [ 3840, 0, 1280, 720 ],
+            "parallax_scale": 0.6
+        },
+        {
+            "name": "camada4",
+            "frame_rect": [ 5120, 0, 1280, 720 ],
+            "parallax_scale": 0.8
+        }
+    ]
+}

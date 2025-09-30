@@ -1,5 +1,5 @@
 {
-    "target_size": [ 1080, 720 ],
+    "target_size": [ 1280, 720 ],
     "layers": [
         {
             "name": "ceu",

@@ -75,9 +75,9 @@ class GameState:
             from scenes.demo import DemoScene
 
             return DemoScene(self)
-        # elif scene_key == "forest":
-        #     from forest_scene import ForestScene
-        #     return ForestScene(self)
+        elif scene_key == "forest":
+             from scenes.forest import ForestScene
+             return ForestScene(self)
         # elif scene_key == "sky":
         #     from sky_scene import SkyScene
         #     return SkyScene(self)
