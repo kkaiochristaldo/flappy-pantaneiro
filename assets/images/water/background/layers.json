@@ -3,32 +3,32 @@
     "layers": [
         {
             "name": "ceu",
-            "frame_rect": [ 0, 0, 272, 160 ],
+            "frame_rect": [ 0, 0, 170, 100 ],
             "parallax_scale": 0.0
         },
         {
             "name": "nuvens",
-            "frame_rect": [ 272, 0, 272, 160 ],
+            "frame_rect": [ 170, 0, 170, 100 ],
             "parallax_scale": 0.2
         },
         {
             "name": "montanha_cinza",
-            "frame_rect": [ 544, 0, 272, 160 ],
+            "frame_rect": [ 340, 0, 170, 100 ],
             "parallax_scale": 0.4
         },
         {
             "name": "montanha_verde",
-            "frame_rect": [ 816, 0, 272, 160 ],
+            "frame_rect": [ 510, 0, 170, 100 ],
             "parallax_scale": 0.6
         },
         {
             "name": "grama_clara",
-            "frame_rect": [ 1088, 0, 272, 160 ],
+            "frame_rect": [ 680, 0, 170, 100 ],
             "parallax_scale": 0.8
         },
         {
             "name": "grama_escura",
-            "frame_rect": [ 1360, 0, 272, 160 ],
+            "frame_rect": [ 850, 0, 170, 100 ],
             "parallax_scale": 1.0
         }
     ]
