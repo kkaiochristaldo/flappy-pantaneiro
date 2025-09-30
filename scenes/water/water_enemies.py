@@ -41,7 +41,7 @@ class WaterEnemy(Entity):
             self.kill()
 
 
-class ChaserDrone(WaterEnemy):
+class Anzol(WaterEnemy):
     """
     Um drone rápido que prioriza a perseguição horizontal, mas se desvia
     levemente na vertical em direção ao jogador.
@@ -50,7 +50,7 @@ class ChaserDrone(WaterEnemy):
     def __init__(self, cfg, player_ref):
         start_y = random.randint(50, SCREEN_HEIGHT - 50)
         super().__init__(
-            cfg["chaser_drone_cfg"], SCREEN_WIDTH + 50, start_y, player_ref
+            cfg["anzol_cfg"], SCREEN_WIDTH + 50, start_y, player_ref
         )
         self.speed = 250
         self.disengage_distance = 250
@@ -159,7 +159,7 @@ class WaterEnemySpawner:
             5.0  # Começa com um delay para não aparecer inimigos imediatamente
         )
 
-        self._factory.register(ChaserDrone, weight=60)
+        self._factory.register(Anzol, weight=60)
         self._factory.register(HomingMissile, weight=40)
 
     def update(

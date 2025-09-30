@@ -24,19 +24,19 @@ class WaterObstacle(Entity):
             self.kill()
 
 
-class FallingRock(WaterObstacle):
+class Lata(WaterObstacle):
     def __init__(self, cfg):
         y = -50  # fora da tela
         super().__init__(
-            cfg["falling_rock_cfg"], SCREEN_WIDTH, y, speed_x=-100, speed_y=200
+            cfg["lata_cfg"], SCREEN_WIDTH, y, speed_x=-100, speed_y=200
         )
 
 
-class ZigZagBee(WaterObstacle):
+class Sacola(WaterObstacle):
     def __init__(self, cfg):
         y = SCREEN_HEIGHT // 2
         super().__init__(
-            cfg["zigzag_bee_cfg"], SCREEN_WIDTH, y, speed_x=-200, speed_y=150
+            cfg["sacola_cfg"], SCREEN_WIDTH, y, speed_x=-200, speed_y=150
         )
         self.timer = 0
 
@@ -61,8 +61,8 @@ class WaterObstacleSpawner:
         self._factory = EntityFactory()
         self._timer = 0.0
 
-        self._factory.register(FallingRock, weight=10)
-        self._factory.register(ZigZagBee, weight=10)
+        self._factory.register(Sacola, weight=10)
+        self._factory.register(Lata, weight=10)
 
     def update(self, delta_time: float, current_speed: float) -> WaterObstacle | None:
         """

@@ -29,26 +29,37 @@
             "fallback_size": [ 60, 60 ],
             "fallback_color": [ 0, 128, 0 ]
         },
-        "zigzag_bee_cfg": {
+        "sacola_cfg": {
             "spritesheet": {
-                "image": "assets/images/water/obstacles/zigzag_bee_sheet.png",
-                "data": "assets/images/water/obstacles/zigzag_bee.json"
+                "image": "assets/images/water/obstacles/sacola_sheet.png",
+                "data": "assets/images/water/obstacles/sacola.json"
+            },
+            "fallback_size": [ 60, 60 ],
+            "fallback_color": [ 0, 128, 0 ]
+        },
+        "lata_cfg": {
+            "spritesheet": {
+                "image": "assets/images/water/obstacles/lata_sheet.png",
+                "data": "assets/images/water/obstacles/lata.json"
             },
             "fallback_size": [ 60, 60 ],
             "fallback_color": [ 0, 128, 0 ]
         }
     },
     "enemies_cfg": {
-        "chaser_drone_cfg": {
+        "anzol_cfg": {
             "spritesheet": {
-                "image": "assets/images/water/enemies/chaser_drone_sheet.png",
-                "data": "assets/images/water/enemies/chaser_drone.json"
+                "image": "assets/images/water/enemies/anzol_sheet.png",
+                "data": "assets/images/water/enemies/anzol.json"
             },
             "fallback_size": [ 60, 60 ],
             "fallback_color": [ 255, 0, 0 ]
         },
         "homing_missile_cfg": {
-            "spritesheet": { },
+            "spritesheet": {
+                "image": "assets/images/water/enemies/anzol_sheet.png",
+                "data": "assets/images/water/enemies/anzol.json"
+            },
             "fallback_size": [ 60, 60 ],
             "fallback_color": [ 255, 0, 0 ]
         }
