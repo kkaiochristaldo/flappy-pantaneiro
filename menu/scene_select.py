@@ -19,10 +19,10 @@ class SceneSelectMenu(BaseMenu):
         self.small_font = self.font_manager.load_font(None, 50)
 
         self._options = [
-            ("Demo", self.__play_demo),
+            #("Demo", self.__play_demo),
             ("Forest", self.__play_forest_scene),
-            ("water", self.__play_water_scene),
-            ("sky", self.__play_sky_scene)
+            ("Water", self.__play_water_scene),
+            ("Sky", self.__play_sky_scene)
         ]
         self._create_buttons()
 
