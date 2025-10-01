@@ -5,9 +5,11 @@ from core import State, GameState, BaseMenu, FontManager
 
 pg.joystick.init()
 
-joystick = pg.joystick.Joystick(0)
-joystick.init()
-
+if pg.joystick.get_count() > 0:
+    joystick = pg.joystick.Joystick(0)
+    joystick.init()
+else:
+    joystick = None
 # ======================================
 
 class SceneSelectMenu(BaseMenu):
@@ -34,7 +36,7 @@ class SceneSelectMenu(BaseMenu):
         
         # =========== adicionado para joystick
 
-        if (event.type == pg.JOYBUTTONDOWN):
+        if (joystick != None and event.type == pg.JOYBUTTONDOWN):
             if (event.button == 4):
                 self._game_state.change_state(State.MAIN_MENU)
         

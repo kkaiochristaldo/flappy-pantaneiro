@@ -13,8 +13,12 @@ from .water_obstacles import WaterObstacleSpawner
 from .water_enemies import WaterEnemySpawner
 
 pg.joystick.init()
-joystick = pg.joystick.Joystick(0)
-joystick.init()
+
+if pg.joystick.get_count() > 0:
+    joystick = pg.joystick.Joystick(0)
+    joystick.init()
+else:
+    joystick = None
 
 class WaterScene:
     def __init__(self, game_state: GameState):
@@ -85,7 +89,7 @@ class WaterScene:
             elif event.key == pg.K_RIGHT:
                 self.player.stop_move_right()
 
-        if (event.type == pg.JOYAXISMOTION):
+        if joystick != None and event.type == pg.JOYAXISMOTION:
             if event.axis == 1:
                 if int(event.value) == 0:
                     self.player.stop_dive()
@@ -105,10 +109,10 @@ class WaterScene:
                     self.player.start_move_left()
                     self.player.stop_move_right()
         
-        if event.type == pg.JOYBUTTONDOWN:
+        if joystick != None and event.type == pg.JOYBUTTONDOWN:
             if event.button == 8:
                self.game_state.change_state(State.PAUSE)
-                
+
     def update(self, delta_time: float):
         """Atualiza o estado do cenário.
 

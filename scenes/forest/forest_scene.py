@@ -12,6 +12,14 @@ from .forest_player import ForestPlayer
 from .forest_enemies import ForestEnemySpawner
 from .forest_fogo import ForestFogo 
 
+pg.joystick.init()
+
+if pg.joystick.get_count() > 0:
+    joystick = pg.joystick.Joystick(0)
+    joystick.init()
+else:
+    joystick = None
+
 class ForestScene:
     def __init__(self, game_state: GameState):
         self.game_state = game_state
@@ -65,7 +73,7 @@ class ForestScene:
 
         # =========== adicionado para joystick
 
-        elif event.type == pg.JOYAXISMOTION:
+        elif joystick != None and event.type == pg.JOYAXISMOTION:
         # Eixo 1 é geralmente o eixo vertical do analógico esquerdo
             if event.axis == 1:
                 # Para cima (valor negativo)
@@ -82,7 +90,7 @@ class ForestScene:
                     self.player.stop_dive()
 
         # --- Adicional: Pausar com o botão do Joystick ---
-        elif event.type == pg.JOYBUTTONDOWN:
+        elif joystick != None and event.type == pg.JOYBUTTONDOWN:
             # O botão 7 é geralmente o "Start" ou "Options"
             if event.button == 8:
                 self.game_state.change_state(State.PAUSE)

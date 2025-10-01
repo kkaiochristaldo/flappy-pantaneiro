@@ -3,8 +3,11 @@ from core import Button, FontManager, GameState
 
 pg.joystick.init()
 
-joystick = pg.joystick.Joystick(0)
-joystick.init()
+if pg.joystick.get_count() > 0:
+    joystick = pg.joystick.Joystick(0)
+    joystick.init()
+else:
+    joystick = None
 
 class BaseMenu:
     def __init__(self, game_state: GameState):
@@ -47,11 +50,11 @@ class BaseMenu:
             elif event.key == pg.K_RETURN:
                 self._select_option()
 
-        if event.type == pg.JOYAXISMOTION:
+        if joystick != None and event.type == pg.JOYAXISMOTION:
             if (event.axis == 1):
                 self._move_selection(int(event.value))
 
-        if event.type == pg.JOYBUTTONDOWN:
+        if joystick != None and event.type == pg.JOYBUTTONDOWN:
             if (event.button == 0):
                 self._select_option()
 
