@@ -1,50 +1,57 @@
 import pygame as pg
-
-# Importar configurações
-from config import FPS, SCREEN_WIDTH, SCREEN_HEIGHT # Será alterado
+from config import FPS
 from core import GameState
-
+import sys
 
 def main():
     """Função principal do jogo."""
-    # Inicialização do Pygame
     pg.init()
     pg.display.set_caption("Flappy Pantaneiro")
 
-    # Criar a janela do jogo
-    screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    # 1. Defina a resolução para a qual seu jogo foi projetado.
+    # Esta será sua "tela virtual".
+    VIRTUAL_WIDTH, VIRTUAL_HEIGHT = 1080, 700
+
+    # 2. Crie a tela real em modo tela cheia para detectar o tamanho do monitor.
+    screen = pg.display.set_mode((0, 0), pg.FULLSCREEN)
+    REAL_WIDTH, REAL_HEIGHT = screen.get_size()
+
+    # 3. Crie a superfície virtual onde TODO o jogo será desenhado.
+    game_surface = pg.Surface((VIRTUAL_WIDTH, VIRTUAL_HEIGHT))
+
+    # 4. Calcule a escala para manter a proporção (letterboxing).
+    scale_ratio = min(REAL_WIDTH / VIRTUAL_WIDTH, REAL_HEIGHT / VIRTUAL_HEIGHT)
+    scaled_width = int(VIRTUAL_WIDTH * scale_ratio)
+    scaled_height = int(VIRTUAL_HEIGHT * scale_ratio)
+    
+    offset_x = (REAL_WIDTH - scaled_width) // 2
+    offset_y = (REAL_HEIGHT - scaled_height) // 2
+
     clock = pg.time.Clock()
 
-    # Criar gerenciador de estados
-    game_state = GameState(screen)
+    game_state = GameState(game_surface)
 
-    # Loop principal do jogo
     running = True
     while running:
-        # Gerenciar eventos
         for event in pg.event.get():
-            if event.type == pg.QUIT:
+            if event.type == pg.QUIT or (event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE):
                 running = False
-
-            # Passar eventos para o estado atual
             running = game_state.handle_event(event)
 
-        # Atualizar o estado atual
         game_state.update()
 
-        # Limpar a tela
-        screen.fill((0, 0, 0))
-        game_state.render(screen)
+        game_state.render(game_surface) # O método render agora desenha em 'game_surface'.
 
-        # Atualizar a tela
+        scaled_surface = pg.transform.smoothscale(game_surface, (scaled_width, scaled_height))
+        
+        screen.fill((0, 0, 0)) # Fundo preto para as "barras"
+        screen.blit(scaled_surface, (offset_x, offset_y))
+
         pg.display.flip()
-
-        # Controlar FPS
         clock.tick(FPS)
 
-    # Encerrar o Pygame
     pg.quit()
-
+    sys.exit()
 
 if __name__ == "__main__":
     main()
