@@ -21,7 +21,8 @@ class SceneSelectMenu(BaseMenu):
         self._options = [
             ("Demo", self.__play_demo),
             ("Forest", self.__play_forest_scene),
-            ("water", self.__play_water_scene)
+            ("water", self.__play_water_scene),
+            ("sky", self.__play_sky_scene)
         ]
         self._create_buttons()
 

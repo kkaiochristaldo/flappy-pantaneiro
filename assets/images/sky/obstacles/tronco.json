@@ -1,0 +1,13 @@
+{
+    "target_size": [ 256, 256 ],
+    "animations": [
+        {
+            "name": "falling",
+            "frames_rect": [
+                [ 0, 0, 500, 648 ]
+            ],
+            "loop": false,
+            "speed": 0
+        }
+    ]
+}

@@ -1,0 +1,152 @@
+import pygame as pg
+from config import SCREEN_HEIGHT
+from core import Entity
+
+
+class SkyPlayer(Entity):
+    def __init__(self, player_cfg: dict, invincible: bool = False):
+        start_x = 100
+        start_y = SCREEN_HEIGHT // 2
+        super().__init__(player_cfg, start_x, start_y)
+
+        # Configurações de física
+        self.__position = pg.math.Vector2(start_x, start_y)
+        self.__velocity = pg.math.Vector2(0, 0)
+        self.__gravity_acceleration = 700  # Reduz gravidade para voo mais controlado
+        self.__thrust_acceleration = 1000   # Reduz impulso
+        self.__dive_acceleration = 1000     # Reduz mergulho
+        self.__tap_impulse = 0             # Remove impulso instantâneo
+        self.__max_fall_speed = 400        # Reduz velocidade de queda
+        self.__max_rise_speed = -400       # Reduz velocidade de subida
+        self.__hover_stability = 0.92      # Nova propriedade para estabilização
+
+        # Configurações de estado
+        self.__is_alive = True
+        self.__is_thrusting = False
+        self.__is_diving = False
+        self.__invincible = invincible
+
+        # Posicionamento do rect
+        self.rect.center = (int(self.__position.x), int(self.__position.y))
+        self.__controls_locked = False  
+
+    @property
+    def controls_locked(self):
+        return self.__controls_locked
+
+    def lock_controls(self):
+        """Trava os controles do player (usado pelo jacaré)"""
+        self.__controls_locked = True
+        self.__is_thrusting = False
+        self.__is_diving = False
+
+    @property
+    def invincible(self):
+        return self.__invincible
+
+    @invincible.setter
+    def invincible(self, value: bool):
+        self.__invincible = value
+
+    @property
+    def position(self):
+        return self.__position
+
+    def update(self, delta_time: float):
+        """
+        Atualiza o estado do jogador. A lógica de física deve ser
+        implementada na classe filha.
+        """
+        # Primeiro, atualiza a lógica de animação
+        self.__update_animation_state()
+
+        # A classe base cuida da animação recém definida
+        super().update(delta_time)
+
+        # Processamento da física
+        self.__process_physics(delta_time)
+
+        # Atualiza a posição do rect
+        self.rect.center = (int(self.__position.x), int(self.__position.y))
+
+    def __process_physics(self, delta_time: float):
+        """Implementa a física de gravidade, propulsão e mergulho."""
+
+        # Se os controles estão travados, apenas aplica gravidade
+        if self.__controls_locked:
+            current_acceleration = self.__gravity_acceleration
+            self.__velocity.y += current_acceleration * delta_time
+            self.__velocity.y = min(self.__velocity.y, self.__max_fall_speed)
+            self.__position.y += self.__velocity.y * delta_time
+            
+            # Não deixa sair da tela
+            if self.__position.y < 0:
+                self.__position.y = 0
+                self.__velocity.y = 0
+            if self.__position.y > SCREEN_HEIGHT:
+                self.__position.y = SCREEN_HEIGHT
+                self.__velocity.y = 0
+            return
+
+        # 1. Calcular a aceleração resultante
+        if self.__is_thrusting:
+            # Subindo ativamente
+            current_acceleration = -self.__thrust_acceleration
+        elif self.__is_diving:
+            # Descendo ativamente
+            current_acceleration = self.__dive_acceleration
+        else:
+            # Modo hover - estabiliza gradualmente
+            current_acceleration = self.__gravity_acceleration
+            # Aplica resistência para estabilizar
+            self.__velocity.y *= self.__hover_stability
+
+        # 2. Aplicar a aceleração à velocidade
+        self.__velocity.y += current_acceleration * delta_time
+
+        # 3. Limitar a velocidade
+        self.__velocity.y = max(
+            self.__max_rise_speed, min(self.__velocity.y, self.__max_fall_speed)
+        )
+
+        # 4. Aplicar a velocidade à posição
+        self.__position.y += self.__velocity.y * delta_time
+
+        # 5. Manter o jogador dentro da tela
+        if self.__position.y < 0:
+            self.__position.y = 0
+            self.__velocity.y = 0
+        if self.__position.y > SCREEN_HEIGHT:
+            self.__position.y = SCREEN_HEIGHT
+            self.__velocity.y = 0
+            # self.die()  # O jogador morre se tocar o chão (exemplo)
+
+    def __update_animation_state(self):
+        """Define a animação correta com base no estado atual."""
+        if self.__is_diving:
+            self.set_animation("down")
+        elif self.__is_thrusting:
+            self.set_animation("up")
+        else:
+            self.set_animation("keep")
+
+    def start_thrust(self):
+        self.__is_thrusting = True
+        self.__is_diving = False
+
+    def stop_thrust(self):
+        self.__is_thrusting = False
+
+    def start_dive(self):
+        self.__is_diving = True
+        self.__is_thrusting = False
+
+    def stop_dive(self):
+        self.__is_diving = False
+
+    def die(self):
+        """Sobrescreve o método die para parar os movimentos."""
+        self.__is_alive = False
+        self.__is_thrusting = False
+        self.__is_diving = False
+        # Não chama game over aqui - deixa a cena decidir quando fazer isso

@@ -72,18 +72,19 @@ class GameState:
     def load_scene(self, scene_key: str):
         if scene_key == "Demo":
             from scenes.demo import DemoScene
-
             return DemoScene(self)
+
         elif scene_key == "forest":
              from scenes.forest import ForestScene
              return ForestScene(self)
-        # elif scene_key == "sky":
-        #     from sky_scene import SkyScene
-        #     return SkyScene(self)
+
         elif scene_key == "water":
-            from scenes.water import WaterScene
-            
+            from scenes.water import WaterScene            
             return WaterScene(self)
+
+        elif scene_key == "sky":
+            from scenes.sky.scene import SkyScene
+            return SkyScene(self)
 
         return None
 
