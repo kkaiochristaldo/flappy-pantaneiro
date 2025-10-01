@@ -8,24 +8,20 @@ from core import (
     BackgroundManager,
     load_json,
 )
-from .demo_player import DemoPlayer
-from .demo_obstacles import DemoObstacleSpawner
-from .demo_enemies import DemoEnemySpawner
+from .water_player import WaterPlayer
+from .water_obstacles import WaterObstacleSpawner
+from .water_enemies import WaterEnemySpawner
 
-# =========== adicionado para joystick
 pg.joystick.init()
-
 joystick = pg.joystick.Joystick(0)
 joystick.init()
 
-# =====================================
-
-class DemoScene:
+class WaterScene:
     def __init__(self, game_state: GameState):
         self.game_state = game_state
-        self.config = load_json("./config/demo.json")
-
-        # Instanciar os gerenciadores
+        self.config = load_json("./config/water.json")
+    
+    # Instanciar os gerenciadores
         self.scroll_manager = ScrollerManager(self.config["scroller_cfg"])
         self.background_manager = BackgroundManager(self.config["background_cfg"])
         self.score_manager = ScoreManager(self.config)
@@ -38,64 +34,81 @@ class DemoScene:
         self.player_group = pg.sprite.GroupSingle()
 
         # Instanciar o jogador
-        self.player = DemoPlayer(self.config["player_cfg"], invincible=False)
+        self.player = WaterPlayer(self.config["player_cfg"], invincible=False)
         if self.player:
             self.player_group.add(self.player)
             self.all_sprites_group.add(self.player)
 
         # Instanciar o spawner de obstáculos
-        self.obstacle_spawner = DemoObstacleSpawner(self.config["obstacles_cfg"])
+        self.obstacle_spawner = WaterObstacleSpawner(self.config["obstacles_cfg"])
 
         # Instanciar o spawner de inimigos
-        self.enemy_spawner = DemoEnemySpawner(self.config["enemies_cfg"])
+        self.enemy_spawner = WaterEnemySpawner(self.config["enemies_cfg"])
 
     def handle_event(self, event: pg.event.Event):
-        """Processa eventos do Pygame.
 
-        Args:
-            event (pg.event.Event): Evento a ser processado
-        """
         if event.type == pg.KEYDOWN:
+            # Se a SETA PARA CIMA for pressionada
             if event.key == pg.K_UP:
                 self.player.start_thrust()
+
+            # Se a SETA PARA BAIXO for pressionada
             elif event.key == pg.K_DOWN:
                 self.player.start_dive()
+
+            # Se a SETA PARA ESQUERDA for pressionada
+            elif event.key == pg.K_LEFT:
+                self.player.start_move_left()
+
+            # Se a SETA PARA DIREITA for pressionada
+            elif event.key == pg.K_RIGHT:
+                self.player.start_move_right()
+
+            # Se a tecla ESCAPE for pressionada
             elif event.key == pg.K_ESCAPE:
                 self.game_state.change_state(State.PAUSE)
 
-        # --- Eventos de Tecla Solta ---
-        elif event.type == pg.KEYUP:
+        if event.type == pg.KEYUP:
+            # Se a SETA PARA CIMA for solta
             if event.key == pg.K_UP:
                 self.player.stop_thrust()
+
+            # Se a SETA PARA BAIXO for solta
             elif event.key == pg.K_DOWN:
                 self.player.stop_dive()
 
-        # =========== adicionado para joystick
+            # Se a SETA PARA ESQUERDA for solta
+            elif event.key == pg.K_LEFT:
+                self.player.stop_move_left()
 
-        elif event.type == pg.JOYAXISMOTION:
-        # Eixo 1 é geralmente o eixo vertical do analógico esquerdo
+            # Se a SETA PARA DIREITA for solta
+            elif event.key == pg.K_RIGHT:
+                self.player.stop_move_right()
+
+        if (event.type == pg.JOYAXISMOTION):
             if event.axis == 1:
-                # Para cima (valor negativo)
-                if int(event.value) == -1:
+                if int(event.value) == 0:
+                    self.player.stop_dive()
+                    self.player.stop_thrust()
+                elif int(event.value) == -1:
                     self.player.start_thrust()
-                    self.player.stop_dive() # Impede movimento simultâneo
-                # Para baixo (valor positivo)
                 elif int(event.value) == 1:
                     self.player.start_dive()
-                    self.player.stop_thrust() # Impede movimento simultâneo
-                # Analógico no centro (zona morta)
-                else:
-                    self.player.stop_thrust()
-                    self.player.stop_dive()
-
-        # --- Adicional: Pausar com o botão do Joystick ---
-        elif event.type == pg.JOYBUTTONDOWN:
-            # O botão 7 é geralmente o "Start" ou "Options"
+            if event.axis == 0:
+                if int(event.value) == 0:
+                    self.player.stop_move_left()
+                    self.player.stop_move_right()
+                elif int(event.value) == 1:
+                    self.player.start_move_right()
+                    self.player.stop_move_left()
+                elif int(event.value) == -1:
+                    self.player.start_move_left()
+                    self.player.stop_move_right()
+        
+        if event.type == pg.JOYBUTTONDOWN:
             if event.button == 8:
-                self.game_state.change_state(State.PAUSE)
+               self.game_state.change_state(State.PAUSE)
                 
-        # =========================================
-
     def update(self, delta_time: float):
         """Atualiza o estado do cenário.
 

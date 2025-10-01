@@ -1,0 +1,13 @@
+{
+    "target_size": [ 96, 96 ],
+    "animations": [
+        {
+            "name": "lata",
+            "frames_rect": [
+                [ 0, 0, 32, 32 ]
+            ],
+            "loop": true,
+            "speed": 0.18
+        }
+    ]
+}

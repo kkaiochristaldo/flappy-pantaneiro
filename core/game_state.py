@@ -1,7 +1,6 @@
 import pygame as pg
 from enum import Enum
 
-
 class State(Enum):
     """Estados possíveis do jogo"""
 
@@ -81,10 +80,10 @@ class GameState:
         # elif scene_key == "sky":
         #     from sky_scene import SkyScene
         #     return SkyScene(self)
-        # elif scene_key == "water":
-        #     from scenes.water import WaterScene
-
-        #     return WaterScene(self)
+        elif scene_key == "water":
+            from scenes.water import WaterScene
+            
+            return WaterScene(self)
 
         return None
 

@@ -1,6 +1,10 @@
 import pygame as pg
 from core import Button, FontManager, GameState
 
+pg.joystick.init()
+
+joystick = pg.joystick.Joystick(0)
+joystick.init()
 
 class BaseMenu:
     def __init__(self, game_state: GameState):
@@ -42,6 +46,15 @@ class BaseMenu:
                 self._move_selection(-1)
             elif event.key == pg.K_RETURN:
                 self._select_option()
+
+        if event.type == pg.JOYAXISMOTION:
+            if (event.axis == 1):
+                self._move_selection(int(event.value))
+
+        if event.type == pg.JOYBUTTONDOWN:
+            if (event.button == 0):
+                self._select_option()
+
 
     def _move_selection(self, direction):
         if self._buttons:
