@@ -49,24 +49,45 @@ class ForestScene:
             event (pg.event.Event): Evento a ser processado
         """
         if event.type == pg.KEYDOWN:
-            # Se a SETA PARA CIMA for pressionada
             if event.key == pg.K_UP:
                 self.player.start_thrust()
-
-            # Se a SETA PARA BAIXO for pressionada
-            if event.key == pg.K_DOWN:
+            elif event.key == pg.K_DOWN:
                 self.player.start_dive()
             elif event.key == pg.K_ESCAPE:
                 self.game_state.change_state(State.PAUSE)
 
-        if event.type == pg.KEYUP:
-            # Se a SETA PARA CIMA for solta
+        # --- Eventos de Tecla Solta ---
+        elif event.type == pg.KEYUP:
             if event.key == pg.K_UP:
                 self.player.stop_thrust()
-
-            # Se a SETA PARA BAIXO for solta
-            if event.key == pg.K_DOWN:
+            elif event.key == pg.K_DOWN:
                 self.player.stop_dive()
+
+        # =========== adicionado para joystick
+
+        elif event.type == pg.JOYAXISMOTION:
+        # Eixo 1 é geralmente o eixo vertical do analógico esquerdo
+            if event.axis == 1:
+                # Para cima (valor negativo)
+                if int(event.value) == -1:
+                    self.player.start_thrust()
+                    self.player.stop_dive() # Impede movimento simultâneo
+                # Para baixo (valor positivo)
+                elif int(event.value) == 1:
+                    self.player.start_dive()
+                    self.player.stop_thrust() # Impede movimento simultâneo
+                # Analógico no centro (zona morta)
+                else:
+                    self.player.stop_thrust()
+                    self.player.stop_dive()
+
+        # --- Adicional: Pausar com o botão do Joystick ---
+        elif event.type == pg.JOYBUTTONDOWN:
+            # O botão 7 é geralmente o "Start" ou "Options"
+            if event.button == 8:
+                self.game_state.change_state(State.PAUSE)
+                
+        # =========================================
 
     def update(self, delta_time: float):
         """Atualiza o estado do cenário.
