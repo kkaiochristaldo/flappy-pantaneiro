@@ -3,8 +3,9 @@ from core import Button, FontManager, GameState
 
 pg.joystick.init()
 
-joystick = pg.joystick.Joystick(0)
-joystick.init()
+if pg.joystick.get_count() > 0:
+    joystick = pg.joystick.Joystick(0)
+    joystick.init()
 
 class BaseMenu:
     def __init__(self, game_state: GameState):

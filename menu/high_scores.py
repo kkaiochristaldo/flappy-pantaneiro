@@ -5,9 +5,11 @@ from core import State, GameState, ScoreManager, FontManager, BaseMenu
 
 pg.joystick.init()
 
-joystick = pg.joystick.Joystick(0)
-joystick.init()
-
+if pg.joystick.get_count() > 0:
+    joystick = pg.joystick.Joystick(0)
+    joystick.init()
+else:
+    joystick = None
 # ====================================
 
 class HighScoresMenu(BaseMenu):
@@ -23,9 +25,12 @@ class HighScoresMenu(BaseMenu):
     def handle_event(self, event: pg.event.Event):
         # =========== modificado para joystick
 
-        if event.type == pg.KEYDOWN or event.type == pg.JOYBUTTONDOWN:
+        if event.type == pg.KEYDOWN:
             self._game_state.change_state(State.MAIN_MENU)
         
+        if joystick != None and event.type == pg.JOYBUTTONDOWN:
+            self._game_state.change_state(State.MAIN_MENU)
+
         # ====================================================
     def update(self, delta_time=None):
         pass

@@ -15,8 +15,11 @@ from .demo_enemies import DemoEnemySpawner
 # =========== adicionado para joystick
 pg.joystick.init()
 
-joystick = pg.joystick.Joystick(0)
-joystick.init()
+if pg.joystick.get_count() > 0:
+    joystick = pg.joystick.Joystick(0)
+    joystick.init()
+else:
+    joystick = None
 
 # =====================================
 
@@ -71,8 +74,8 @@ class DemoScene:
                 self.player.stop_dive()
 
         # =========== adicionado para joystick
-
-        elif event.type == pg.JOYAXISMOTION:
+        
+        elif joystick != None and event.type == pg.JOYAXISMOTION:
         # Eixo 1 é geralmente o eixo vertical do analógico esquerdo
             if event.axis == 1:
                 # Para cima (valor negativo)
