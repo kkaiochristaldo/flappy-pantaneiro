@@ -15,6 +15,9 @@ class ForestFogo(Entity):
         # Define a animação inicial como 'burn'
         self.set_animation("burn")
 
+        self.sound_fogo = pg.mixer.Sound("songs/forest/fogo.mp3")  # Carrega o som do fogo
+        self.sound_fogo.play()  # toca o som do fogo
+
     def update(self, delta_time: float):
         # Só atualiza a animação
         super().update(delta_time)

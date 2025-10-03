@@ -1,0 +1,13 @@
+{
+    "target_size": [ 350, 150 ],
+    "animations": [
+        {
+            "name": "button_distancia",
+            "frames_rect": [
+                [ 0, 0, 350, 150 ]
+            ],
+            "loop": false,
+            "speed": 0.10
+        }
+    ]
+}

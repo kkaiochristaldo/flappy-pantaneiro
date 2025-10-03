@@ -61,6 +61,9 @@ class Cobra(ForestEnemies):
             direction = direction.normalize()
         self._velocity = direction * self.speed
 
+        self.sound_cobra = pg.mixer.Sound("songs/forest/cobra.mp3")  # Carrega o som da cobra
+        self.sound_cobra.play()  # toca o som da cobra ao spawnar
+
     def update(self, delta_time: float):
         # Apenas move na direção definida
         super().update(delta_time)
@@ -99,6 +102,8 @@ class Javali(ForestEnemies):
 
         self.set_animation("run")
 
+        self.sound_javali = pg.mixer.Sound("songs/forest/javali.mp3")  # Carrega o som do javali
+
     def update(self, delta_time: float):
         # Avança animações (Entity.update)
         super().update(delta_time)
@@ -119,6 +124,7 @@ class Javali(ForestEnemies):
                 self._velocity.y = self.JUMP_VELOCITY
                 self.is_jumping = True
                 self.has_jumped = True
+                self.sound_javali.play()  # toca o som do javali ao pular
                 self.set_animation("jump")
 
         # Aplica gravidade se estiver no ar
@@ -164,6 +170,9 @@ class Mosquito(ForestEnemies):
         self._update_target_timer = 0.0
         self.reaction_time = 0.3
 
+        self.sound_mosquito = pg.mixer.Sound("songs/forest/mosquito.mp3")  # Carrega o som do mosquito
+        self.sound_mosquito.play()  # toca o som do mosquito ao spawnar
+        
     def update(self, delta_time: float):
         if self._is_homing:
             distance = self._position.distance_to(self.player.position)

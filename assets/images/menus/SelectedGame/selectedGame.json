@@ -1,0 +1,53 @@
+{
+    "target_size": [ 250, 100 ],
+    "animations": [
+        {
+            "name": "button1",
+            "frames_rect": [
+                [ 0, 0, 250, 100 ]
+            ],
+            "loop": false,
+            "speed": 0.10
+        },
+        {
+            "name": "button2",
+            "frames_rect": [
+                [ 250, 0, 250, 100 ]
+            ],
+            "loop": false,
+            "speed": 0.10
+        },
+        {
+            "name": "button3",
+            "frames_rect": [
+                [ 500, 0, 250, 100 ]
+            ],
+            "loop": false,
+            "speed": 0.10
+        },
+        {
+            "name": "buttonSelected1",
+            "frames_rect": [
+                [ 0, 100, 250, 100 ]
+            ],
+            "loop": false,
+            "speed": 0.10
+        },
+        {
+            "name": "buttonSelected2",
+            "frames_rect": [
+                [ 250, 100, 250, 100 ]
+            ],
+            "loop": false,
+            "speed": 0.10
+        },
+        {
+            "name": "buttonSelected3",
+            "frames_rect": [
+                [ 500, 100, 250, 100 ]
+            ],
+            "loop": false,
+            "speed": 0.10
+        }
+    ]
+}

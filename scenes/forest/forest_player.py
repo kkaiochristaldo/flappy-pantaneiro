@@ -2,7 +2,6 @@ import pygame as pg
 from config import SCREEN_HEIGHT
 from core import Entity
 
-
 class ForestPlayer(Entity):
     def __init__(self, player_cfg: dict, invincible: bool = False):
         start_x = 150
@@ -20,13 +19,14 @@ class ForestPlayer(Entity):
         self.__max_rise_speed = -500
 
         # Configurações de estado
-        self.__is_alive = True
         self.__is_thrusting = False
         self.__is_diving = False
         self.__invincible = invincible
 
         # Posicionamento do rect
         self.rect.center = (int(self.__position.x), int(self.__position.y))
+
+        self.sound_die = pg.mixer.Sound("songs/forest/macaco.mp3")  # Carrega o som da morte do macaco
 
     @property
     def invincible(self):
@@ -47,13 +47,10 @@ class ForestPlayer(Entity):
         """
         # Primeiro, atualiza a lógica de animação
         self.__update_animation_state()
-
         # A classe base cuida da animação recém definida
         super().update(delta_time)
-
         # Processamento da física
         self.__process_physics(delta_time)
-
         # Atualiza a posição do rect
         self.rect.center = (int(self.__position.x), int(self.__position.y))
 
@@ -114,6 +111,11 @@ class ForestPlayer(Entity):
         self.__is_diving = False
 
     def die(self):
-        """Sobrescreve o método die para parar os movimentos."""
+        """Para todos os movimentos, marca como morto e toca som."""
         self.__is_thrusting = False
         self.__is_diving = False
+        self.__is_alive = False
+    
+        pg.mixer.stop()  # Para todos os sons/músicas anteriores
+        self.sound_die.play()  # Toca o som do macaco
+

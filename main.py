@@ -6,11 +6,18 @@ import sys
 def main():
     """Função principal do jogo."""
     pg.init()
+    pg.mixer.init()  # Inicializa o mixer de som
     pg.display.set_caption("Flappy Pantaneiro")
 
     # 1. Defina a resolução para a qual seu jogo foi projetado.
     # Esta será sua "tela virtual".
     VIRTUAL_WIDTH, VIRTUAL_HEIGHT = 1080, 700
+
+    # Carrega a música de fundo
+    pg.mixer.music.load("songs/menus/trilha_sonora.mp3")
+
+    # Reproduz (loops=-1 significa repetir infinitamente)
+    pg.mixer.music.play(loops=-1)
 
     # 2. Crie a tela real em modo tela cheia para detectar o tamanho do monitor.
     screen = pg.display.set_mode((0, 0), pg.FULLSCREEN)

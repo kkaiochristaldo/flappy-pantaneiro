@@ -146,9 +146,15 @@ class ForestScene:
         # Renderizar pontuação
         font = pg.font.SysFont(None, 36)
         score_text = font.render(
-            f"Pontuação: {self.score_manager.get_score()}", True, (255, 255, 255)
+            f"Distância: {self.score_manager.get_score()}", True, (255, 255, 255)
         )
-        screen.blit(score_text, (10, 10))
+        # Obter as dimensões da tela
+        screen_width, screen_height = screen.get_size()
+
+        # Calcular a posição central para o texto
+        text_rect = score_text.get_rect(center=(screen_width // 1.1, 10 + score_text.get_height() // 2))
+
+        screen.blit(score_text, text_rect.topleft)
 
     def __spawn_enemies(self, delta_time):
         new_enemy = self.enemy_spawner.update(

@@ -70,11 +70,7 @@ class GameState:
         return True
 
     def load_scene(self, scene_key: str):
-        if scene_key == "Demo":
-            from scenes.demo import DemoScene
-            return DemoScene(self)
-
-        elif scene_key == "forest":
+        if scene_key == "forest":
              from scenes.forest import ForestScene
              return ForestScene(self)
 
